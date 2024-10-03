@@ -1,5 +1,6 @@
 package raisetech.studentmanagement;
 
+import io.micrometer.common.util.StringUtils;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,6 +16,11 @@ public class StudentManagementApplication {
 
 	@GetMapping("/hello")
 	public String hello() {
-		return "Hello, World!";
+		String message = "Hello, World!";
+		if (StringUtils.isEmpty(message)) {
+			return "Message is empty!";
+		} else {
+			return message;
+		}
 	}
 }
