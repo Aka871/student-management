@@ -21,8 +21,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class StudentManagementApplication {
 
+  private final StudentRepository repository;
+
   @Autowired
-  private StudentRepository repository;
+  public StudentManagementApplication(StudentRepository repository) {
+    this.repository = repository;
+  }
 
   private Map<String, Integer> students = new HashMap<>();
 
@@ -47,7 +51,7 @@ public class StudentManagementApplication {
     }
   }
 
-  @GetMapping("/student")
+  @GetMapping("/students")
   public String getStudent(@RequestParam String name) {
     Student student = repository.searchByName(name);
     return student.getName() + " " + student.getAge() + "歳";
@@ -58,33 +62,33 @@ public class StudentManagementApplication {
     return repository.getAll();
   }
 
-  @PostMapping("/student")
+  @PostMapping("/students")
   public void registerStudent(String name, int age) {
     repository.registerStudent(name, age);
   }
 
-  @PatchMapping("/student")
+  @PatchMapping("/students")
   public void updateStudent(String name, int age) {
     repository.updateStudent(name, age);
   }
 
-  @DeleteMapping("/student")
+  @DeleteMapping("/students")
   public void deleteStudent(String name) {
     repository.deleteStudent(name);
   }
 
-  @PostMapping("/addStudent")
+  @PostMapping("/addStudents")
   public String addStudent(@RequestParam String name, @RequestParam Integer age) {
     students.put(name, age);
     return "生徒を追加しました：" + name + " " + age + "歳";
   }
 
-  @GetMapping("/students")
+  @GetMapping("/getAllStudents")
   public Map<String, Integer> getAllStudents() {
     return students;
   }
 
-  @PutMapping("/student/{name}")
+  @PutMapping("/students/{name}")
   public String updateStudentAge(@PathVariable String name, @RequestParam int newAge) {
     if (students.containsKey(name)) {
       students.put(name, newAge);
