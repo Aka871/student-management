@@ -3,10 +3,14 @@ package raisetech.studentmanagement;
 import io.micrometer.common.util.StringUtils;
 import jakarta.annotation.PostConstruct;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -17,8 +21,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class StudentManagementApplication {
 
-  private String name = "Enami Kouji";
-  private int age = 37;
+  private final StudentRepository repository;
+
+  @Autowired
+  public StudentManagementApplication(StudentRepository repository) {
+    this.repository = repository;
+  }
 
   private Map<String, Integer> students = new HashMap<>();
 
@@ -43,23 +51,33 @@ public class StudentManagementApplication {
     }
   }
 
-  @GetMapping("/studentInfo")
-  public String getStudentInfo() {
-    return name + " " + age + "歳";
+  @GetMapping("/students/search")
+  public String getStudent(@RequestParam String name) {
+    Student student = repository.searchByName(name);
+    return student.getName() + " " + student.getAge() + "歳";
   }
 
-  @PostMapping("/studentInfo")
-  public void setStudentInfo(String name, int age) {
-    this.name = name;
-    this.age = age;
+  @GetMapping("/allStudents")
+  public List<Student> getAll() {
+    return repository.getAll();
   }
 
-  @PostMapping("/studentName")
-  public void updateStudentName(String name) {
-    this.name = name;
+  @PostMapping("/students")
+  public void registerStudent(String name, int age) {
+    repository.registerStudent(name, age);
   }
 
-  @PostMapping("/addStudent")
+  @PatchMapping("/students")
+  public void updateStudent(String name, int age) {
+    repository.updateStudent(name, age);
+  }
+
+  @DeleteMapping("/students")
+  public void deleteStudent(String name) {
+    repository.deleteStudent(name);
+  }
+
+  @PostMapping("/addStudents")
   public String addStudent(@RequestParam String name, @RequestParam Integer age) {
     students.put(name, age);
     return "生徒を追加しました：" + name + " " + age + "歳";
@@ -70,7 +88,7 @@ public class StudentManagementApplication {
     return students;
   }
 
-  @PutMapping("/student/{name}")
+  @PutMapping("/students/{name}")
   public String updateStudentAge(@PathVariable String name, @RequestParam int newAge) {
     if (students.containsKey(name)) {
       students.put(name, newAge);
