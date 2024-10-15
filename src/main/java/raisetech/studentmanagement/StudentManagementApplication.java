@@ -51,7 +51,7 @@ public class StudentManagementApplication {
     }
   }
 
-  @GetMapping("/students")
+  @GetMapping("/students/search")
   public String getStudent(@RequestParam String name) {
     Student student = repository.searchByName(name);
     return student.getName() + " " + student.getAge() + "歳";
@@ -83,7 +83,7 @@ public class StudentManagementApplication {
     return "生徒を追加しました：" + name + " " + age + "歳";
   }
 
-  @GetMapping("/getAllStudents")
+  @GetMapping("/students")
   public Map<String, Integer> getAllStudents() {
     return students;
   }
