@@ -11,22 +11,29 @@ import raisetech.studentmanagement.repository.StudentRepository;
 @Service
 public class StudentService {
 
-  private StudentRepository repository;
+  private final StudentRepository repository;
 
   @Autowired
   public StudentService(StudentRepository repository) {
     this.repository = repository;
   }
 
-  public List<Student> searchStudents() {
-    return repository.searchStudents().stream()
-        .filter(student -> student.getAge() >= 30 && student.getAge() < 40)
+  public List<Student> searchStudents(Integer minAge, Integer maxAge) {
+    List<Student> allStudents = repository.searchStudents();
+    List<Student> filteredStudents = allStudents.stream()
+        .filter(student -> minAge == null || student.getAge() >= minAge)
+        .filter(student -> maxAge == null || student.getAge() <= maxAge)
         .collect(Collectors.toList());
+    return filteredStudents;
   }
 
-  public List<StudentCourse> searchCourses() {
-    return repository.searchCourses().stream()
-        .filter(course -> "Javaフルコース".equals(course.getCourseName()))
-        .collect(Collectors.toList());
+  public List<StudentCourse> searchCourses(String courseName) {
+    List<StudentCourse> allCourses = repository.searchCourses();
+    if (courseName != null && !courseName.isEmpty()) {
+      return allCourses.stream()
+          .filter(course -> course.getCourseName().equalsIgnoreCase(courseName))
+          .collect(Collectors.toList());
+    }
+    return allCourses;
   }
 }
