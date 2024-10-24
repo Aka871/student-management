@@ -19,14 +19,14 @@ public class StudentController {
     this.service = service;
   }
 
-  @GetMapping("/students/search")
+  @GetMapping("/students")
   public List<Student> searchStudents(
       @RequestParam(required = false) Integer minAge,
       @RequestParam(required = false) Integer maxAge) {
     return service.searchStudents(minAge, maxAge);
   }
 
-  @GetMapping("/studentsCourses/search")
+  @GetMapping("/students/courses")
   public List<StudentCourse> searchCourses(
       @RequestParam(required = false) String courseName) {
     return service.searchCourses(courseName);
