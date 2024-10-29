@@ -18,6 +18,14 @@ public class StudentService {
     this.repository = repository;
   }
 
+  public List<Student> getStudents() {
+    return repository.searchStudents();
+  }
+
+  public List<StudentCourse> getCourses() {
+    return repository.searchCourses();
+  }
+
   public List<Student> searchStudents(Integer minAge, Integer maxAge) {
     List<Student> allStudents = repository.searchStudents();
     List<Student> filteredStudents = allStudents.stream()
