@@ -23,16 +23,6 @@ public class StudentController {
     this.converter = converter;
   }
 
-  //@GetMapping("/students")
-  //public List<Student> getStudents() {
-  //  return service.getStudents();
-  //}
-
-  //@GetMapping("/courses")
-  //public List<StudentCourse> getCourses() {
-  //  return service.getCourses();
-  //}
-
   @GetMapping("/students")
   public List<Student> getStudents(
       @RequestParam(required = false) Integer minAge,
