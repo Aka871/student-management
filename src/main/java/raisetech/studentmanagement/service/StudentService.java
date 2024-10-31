@@ -18,26 +18,25 @@ public class StudentService {
     this.repository = repository;
   }
 
-  public List<Student> getStudents() {
-    return repository.searchStudents();
-  }
+  //public List<Student> getStudents() {
+  //  return repository.searchStudents();
+  //}
 
-  public List<StudentCourse> getCourses() {
-    return repository.searchCourses();
-  }
+  //public List<StudentCourse> getCourses() {
+  //  return repository.searchCourses();
+  //}
 
-  public List<Student> searchStudents(Integer minAge, Integer maxAge) {
+  public List<Student> getStudents(Integer minAge, Integer maxAge) {
     List<Student> allStudents = repository.searchStudents();
-    List<Student> filteredStudents = allStudents.stream()
-        .filter(student -> minAge == null || student.getAge() >= minAge)
-        .filter(student -> maxAge == null || student.getAge() <= maxAge)
+    return allStudents.stream()
+        .filter(student -> (minAge == null || student.getAge() >= minAge)
+            && (maxAge == null || student.getAge() <= maxAge))
         .collect(Collectors.toList());
-    return filteredStudents;
   }
 
-  public List<StudentCourse> searchCourses(String courseName) {
+  public List<StudentCourse> getCourses(String courseName) {
     List<StudentCourse> allCourses = repository.searchCourses();
-    if (courseName != null && !courseName.isEmpty()) {
+    if (courseName != null && !courseName.trim().isEmpty()) {
       return allCourses.stream()
           .filter(course -> course.getCourseName().equalsIgnoreCase(courseName))
           .collect(Collectors.toList());

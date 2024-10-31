@@ -14,8 +14,8 @@ import raisetech.studentmanagement.service.StudentService;
 @RestController
 public class StudentController {
 
-  private StudentService service;
-  private StudentConverter converter;
+  private final StudentService service;
+  private final StudentConverter converter;
 
   @Autowired
   public StudentController(StudentService service, StudentConverter converter) {
@@ -23,33 +23,33 @@ public class StudentController {
     this.converter = converter;
   }
 
-  @GetMapping("/students/all")
-  public List<Student> getStudents() {
-    return service.getStudents();
-  }
+  //@GetMapping("/students")
+  //public List<Student> getStudents() {
+  //  return service.getStudents();
+  //}
 
-  @GetMapping("/courses/all")
-  public List<StudentCourse> getCourses() {
-    return service.getCourses();
-  }
+  //@GetMapping("/courses")
+  //public List<StudentCourse> getCourses() {
+  //  return service.getCourses();
+  //}
 
   @GetMapping("/students")
-  public List<Student> searchStudents(
+  public List<Student> getStudents(
       @RequestParam(required = false) Integer minAge,
       @RequestParam(required = false) Integer maxAge) {
-    return service.searchStudents(minAge, maxAge);
+    return service.getStudents(minAge, maxAge);
   }
 
-  @GetMapping("/students/courses")
-  public List<StudentCourse> searchCourses(
+  @GetMapping("/courses")
+  public List<StudentCourse> getCourses(
       @RequestParam(required = false) String courseName) {
-    return service.searchCourses(courseName);
+    return service.getCourses(courseName);
   }
 
   @GetMapping("/students/details")
   public List<StudentDetail> searchStudents() {
-    List<Student> students = service.getStudents();
-    List<StudentCourse> studentCourses = service.getCourses();
+    List<Student> students = service.getStudents(null, null);
+    List<StudentCourse> studentCourses = service.getCourses(null);
     return converter.convertStudentDetails(students, studentCourses);
   }
 }
