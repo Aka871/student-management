@@ -11,10 +11,12 @@ public class Student {
   private String fullName;
   private String furiganaName;
   private String nickName;
+  private String phoneNumber;
   private String mailAddress;
   private String municipalityName;
   private int age;
   private String sex;
+  private String occupation;
   private String remark;
   private boolean isDeleted;
 }
