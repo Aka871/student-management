@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<html lang=ja>
+<head>
+  <meta charset="UTF-8">
+  <title>受講生一覧</title>
+</head>
+<body>
+<h1>受講生一覧</h1>
+<table border="1">
+  <thead>
+  <tr>
+    <th>受講生ID</th>
+    <th>名前 (フルネーム)</th>
+    <th>ふりがな</th>
+    <th>ニックネーム</th>
+    <th>電話番号</th>
+    <th>メールアドレス</th>
+    <th>住んでいる地域 (市区町村)</th>
+    <th>年齢</th>
+    <th>性別</th>
+    <th>職業</th>
+    <th>備考</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:each="studentDetail : ${students}">
+    <td th:text="${studentDetail.student.studentId}">10</td>
+    <td th:text="${studentDetail.student.fullName}">山田太郎</td>
+    <td th:text="${studentDetail.student.furiganaName}">やまだ たろう</td>
+    <td th:text="${studentDetail.student.nickName}">Taro</td>
+    <td th:text="${studentDetail.student.phoneNumber}">090-1122-3344</td>
+    <td th:text="${studentDetail.student.mailAddress}">taro.yamada@example.com</td>
+    <td th:text="${studentDetail.student.municipalityName}">東京都新宿区</td>
+    <td th:text="${studentDetail.student.age}">30</td>
+    <td th:text="${studentDetail.student.sex}">male</td>
+    <td th:text="${studentDetail.student.occupation}">学生</td>
+    <td th:text="${studentDetail.student.remark}"> 将来はフリーランスとして働くことを希望</td>
+  </tr>
+  </tbody>
+</table>
+</body>
+</html>
