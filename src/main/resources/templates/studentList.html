@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<html lang=ja>
+<html xmlns:th="http://www.thymeleaf.org" lang="ja">
 <head>
   <meta charset="UTF-8">
   <title>受講生一覧</title>
@@ -32,7 +31,10 @@
     <td th:text="${studentDetail.student.phoneNumber}">090-1122-3344</td>
     <td th:text="${studentDetail.student.mailAddress}">taro.yamada@example.com</td>
     <td th:text="${studentDetail.student.municipalityName}">東京都新宿区</td>
-    <td th:text="${studentDetail.student.age}">30</td>
+    <!--/*-->
+    ageがnullの場合、空白を表示
+    <!--*/-->
+    <td th:text="${studentDetail.student.age == null ? '' : studentDetail.student.age}">30</td>
     <td th:text="${studentDetail.student.sex}">male</td>
     <td th:text="${studentDetail.student.occupation}">学生</td>
     <td th:text="${studentDetail.student.remark}"> 将来はフリーランスとして働くことを希望</td>
