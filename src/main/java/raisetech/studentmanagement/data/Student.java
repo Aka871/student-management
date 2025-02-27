@@ -3,6 +3,8 @@ package raisetech.studentmanagement.data;
 import lombok.Getter;
 import lombok.Setter;
 
+// Data層。データの設計図のようなもの(どんな情報を扱うのかが分かる)
+// Lombokで自動的にフィールドに対して、getterメソッドとsetterメソッドを生成
 @Getter
 @Setter
 public class Student {

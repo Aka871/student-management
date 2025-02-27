@@ -1,5 +1,6 @@
 package raisetech.studentmanagement.controller;
 
+import java.util.Arrays;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -105,10 +106,17 @@ public class StudentController {
   //Webアプリの画面に表示するデータを準備し、テンプレート名を返すメソッド。引数のModelオブジェクトは、テンプレートにデータを渡すためのもの
   public String newStudents(Model model) {
 
+    StudentDetail studentDetail = new StudentDetail();
+
+    //StudentDetailの中に「空のコース」を1つ作って入れている。フォームで「コースを入力する欄」を最初から1つ表示するため
+    //配列や複数の要素を受け取り、固定サイズのリストを作成するためにArrays.asList()を使用
+    //新しいStudentCourse（空のコース）を1つ作り、それをリストにまとめている
+    studentDetail.setStudentsCourses(Arrays.asList(new StudentCourse()));
+
     //model.addAttributeは、テンプレート（ビュー）にデータを渡すためのメソッド
     //空のStudentDetailオブジェクトをテンプレートに渡し、フォームの初期値として使う
     //テンプレートでは、studentDetail.student.fullNameのようにして、StudentDetailオブジェクトのフィールドにアクセスできる
-    model.addAttribute("studentDetail", new StudentDetail());
+    model.addAttribute("studentDetail", studentDetail);
 
     //registerStudent.htmlテンプレートを表示するための名前を返す。この名前は、テンプレートファイルの名前と一致している
     return "registerStudent";
@@ -128,7 +136,7 @@ public class StudentController {
 
     //新規受講生を登録する処理を実装する
     //サービス層のregisterStudentメソッドを呼び出し、studentDetailから取り出した学生情報を登録する
-    service.registerStudent(studentDetail.getStudent());
+    service.registerStudent(studentDetail);
 
     //学生が登録された後、一覧画面（/students）にリダイレクトして確認できるようにする
     return "redirect:/students";

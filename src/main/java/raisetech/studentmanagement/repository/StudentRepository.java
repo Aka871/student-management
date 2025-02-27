@@ -37,4 +37,9 @@ public interface StudentRepository {
 
   //saveStudentメソッドが呼ばれると、データベースに新しいStudentデータを挿入する
   void saveStudent(Student student);
+
+  @Insert(
+      "INSERT INTO students_courses(student_id, course_name, course_start_date, course_expected_end_date)"
+          + "VALUES (#{studentId}, #{courseName}, #{courseStartDate}, #{courseExpectedEndDate})")
+  void saveStudentCourse(StudentCourse studentCourse);
 }

@@ -1,5 +1,6 @@
 package raisetech.studentmanagement.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import raisetech.studentmanagement.data.Student;
 import raisetech.studentmanagement.data.StudentCourse;
+import raisetech.studentmanagement.domain.StudentDetail;
 import raisetech.studentmanagement.repository.StudentRepository;
 
 //ビジネスロジックを記述するクラスには@Serviceアノテーションを付与。そのクラスはBean化され、内部メモリ上に格納される
@@ -26,6 +28,7 @@ public class StudentService {
     this.repository = repository;
   }
 
+  // 受講生検索メソッド (全受講生を取得し、年齢でフィルタリング)
   public List<Student> getStudents(Integer minAge, Integer maxAge) {
     List<Student> allStudents = repository.searchStudents();
     return allStudents.stream()
@@ -37,6 +40,7 @@ public class StudentService {
         .collect(Collectors.toList());
   }
 
+  // コース検索メソッド (全コースを取得し、コース名でフィルタリング。大文字と小文字の区別なし)
   public List<StudentCourse> getCourses(String courseName) {
     List<StudentCourse> allCourses = repository.searchCourses();
 
@@ -53,11 +57,23 @@ public class StudentService {
     return allCourses;
   }
 
-  //Serviceクラスの登録、更新、削除という一連のデータベースに変更を加えるメソッドには、必ず@Transactionalをつける
-  //トランザクション管理を行うためのアノテーションで、メソッドが正常に終わればデータを確定（コミット）、エラー時は変更を取り消す（ロールバック）
+  // Serviceクラスの登録、更新、削除という一連のデータベースに変更を加えるメソッドには、必ず@Transactionalをつける
+  // 関連する処理をひとまとまりとして扱い、途中でエラーが発生した場合、すべての処理を取り消す
   @Transactional
-  public void registerStudent(Student student) {
-    repository.saveStudent(student);
-    // TODO:コース情報登録も行う
+
+  // 受講生登録メソッド (画面から受け取った受講生の情報を、DBに保存する)
+  public void registerStudent(StudentDetail studentDetail) {
+    repository.saveStudent(studentDetail.getStudent());
+
+    //TODO:コース情報登録も行う
+    //for (StudentCourse studentCourse : studentDetail.getStudentsCourses()) {
+    //  repository.saveStudentCourse(studentCourse);
+    //}
+    for (StudentCourse studentCourse : studentDetail.getStudentsCourses()) {
+      studentCourse.setStudentId(studentDetail.getStudent().getStudentId());
+      studentCourse.setCourseStartDate(LocalDate.now());
+      studentCourse.setCourseExpectedEndDate(LocalDate.now().plusYears(1));
+      repository.saveStudentCourse(studentCourse);
+    }
   }
 }
