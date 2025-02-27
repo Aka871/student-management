@@ -3,6 +3,8 @@ package raisetech.studentmanagement.data;
 import lombok.Getter;
 import lombok.Setter;
 
+// Data層。データの設計図のようなもの(どんな情報を扱うのかが分かる)
+// Lombokで自動的にフィールドに対して、getterメソッドとsetterメソッドを生成
 @Getter
 @Setter
 public class Student {
@@ -14,7 +16,10 @@ public class Student {
   private String phoneNumber;
   private String mailAddress;
   private String municipalityName;
-  private int age;
+
+  //デフォルト値がnullのInteger型に変更。int型だとデフォルト値が0になるため、未登録でも0と表示される。
+  //StudentList.htmlでageがnullの場合、空白になるように設定
+  private Integer age;
   private String sex;
   private String occupation;
   private String remark;
