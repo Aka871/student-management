@@ -24,7 +24,8 @@ public interface StudentRepository {
   @Select("SELECT * FROM students_courses")
   List<StudentCourse> searchCourses();
 
-  //@Insertアノテーションは、このメソッドがSQLのINSERT文を実行することを指定
+  // @Insertアノテーションは、このメソッドがSQLのINSERT文を実行することを指定
+  // 目的：Javaオブジェクトの値をSQL文に埋め込んでデータベースに保存する
   @Insert(
 
       //student_idはUUID()で自動生成されるように設定
@@ -32,14 +33,19 @@ public interface StudentRepository {
       //MySQLのstudentsテーブルの各列に、Studentオブジェクトの各フィールドの値を挿入している
       //例えば、MySQLのstudentsテーブルのfull_nameというカラムに、Studentクラスで定義されている変数（フィールド）fullNameの値を挿入している
       "INSERT INTO students (student_id, full_name, furigana_name, nick_name, phone_number, mail_address, municipality_name, age, sex, occupation, remark)"
-          + "VALUES (UUID(), #{fullName}, #{furiganaName}, #{nickName}, #{phoneNumber}, #{mailAddress}, #{municipalityName},"
+          + "VALUES (#{studentId}, #{fullName}, #{furiganaName}, #{nickName}, #{phoneNumber}, #{mailAddress}, #{municipalityName},"
           + " #{age},#{sex}, #{occupation}, #{remark})")
 
   //saveStudentメソッドが呼ばれると、データベースに新しいStudentデータを挿入する
   void saveStudent(Student student);
 
   @Insert(
-      "INSERT INTO students_courses(student_id, course_name, course_start_date, course_expected_end_date)"
-          + "VALUES (#{studentId}, #{courseName}, #{courseStartDate}, #{courseExpectedEndDate})")
+      // 保存先のテーブルとカラムを指定し、各パラメータを対応する場所に埋め込む
+      // 目的：StudentCourseオブジェクトの各フィールドをデータベースの適切なカラムに対応させる
+      "INSERT INTO students_courses(course_id, student_id, course_name, course_start_date, course_expected_end_date)"
+          + "VALUES (#{courseId}, #{studentId}, #{courseName}, #{courseStartDate}, #{courseExpectedEndDate})")
+      
+    // コース情報保存用メソッドのインターフェース宣言
+    // 目的：MyBatisがこのメソッド呼び出しを上記のSQL実行に変換する
   void saveStudentCourse(StudentCourse studentCourse);
 }

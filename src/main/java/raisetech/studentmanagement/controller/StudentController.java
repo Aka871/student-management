@@ -128,6 +128,8 @@ public class StudentController {
   //@ModelAttributeアノテーションを使って、フォームから送信されたStudentDetailのデータを受け取る
   //BindingResultは、入力チェックの結果を受け取るためのもの
   //入力チェックしたいものをBindingResultに入れて、エラーが発生したら、元の画面に戻す
+  //ユーザーがフォームに無効なデータを入力した場合（必須項目の未入力、形式エラーなど）を検出
+  //バリデーション機能を追加した際に機能するように準備
   public String registerStudents(@ModelAttribute StudentDetail studentDetail,
       BindingResult result) {
     if (result.hasErrors()) {

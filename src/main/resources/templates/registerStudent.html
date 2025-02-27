@@ -97,8 +97,16 @@ method="post"： フォームのデータがPOSTメソッドを使ってサー�
   <div th:each="course, stat : *{studentsCourses}">
     <label for="courseName"
            th:for="studentCourse.__${stat.index}__.courseName">受講コース名:</label>
-    <input type="text" id="courseName" th:id="studentCourse.__${stat.index}__.courseName"
-           th:field="*{studentsCourses[__${stat.index}__].courseName}"/>
+    <select th:id="studentCourse.__${stat.index}__.courseName"
+            th:field="*{studentsCourses[__${stat.index}__].courseName}">
+      <!-- 選択肢を追加 -->
+      <option value="">コースを選択してください</option>
+      <option value="AWSフルコース">AWSフルコース</option>
+      <option value="Javaフルコース">Javaフルコース</option>
+      <option value="Webマーケティングコース">Webマーケティングコース</option>
+      <option value="WordPress副業コース">WordPress副業コース</option>
+      <option value="デザインコース">デザインコース</option>
+    </select>
   </div>
   <div>
     <!--/*-->

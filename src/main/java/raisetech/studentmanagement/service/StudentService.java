@@ -2,6 +2,7 @@ package raisetech.studentmanagement.service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -58,21 +59,48 @@ public class StudentService {
   }
 
   // Serviceクラスの登録、更新、削除という一連のデータベースに変更を加えるメソッドには、必ず@Transactionalをつける
-  // 関連する処理をひとまとまりとして扱い、途中でエラーが発生した場合、すべての処理を取り消す
+  // 関連する処理をひとまとまりとして扱い、途中でエラーが発生した場合、すべての変更を取り消す
   @Transactional
-
-  // 受講生登録メソッド (画面から受け取った受講生の情報を、DBに保存する)
   public void registerStudent(StudentDetail studentDetail) {
+
+    // ランダムなUUIDを生成して受講生IDとして使用
+    // 目的：各受講生に一意の識別子を付与し、データの重複や混同を防ぐ
+    String studentUuid = UUID.randomUUID().toString();
+
+    // 生成したUUIDを受講生オブジェクトに設定
+    // 目的：データベース保存時に使用するID値を事前に確定させる
+    studentDetail.getStudent().setStudentId(studentUuid);
+
+    // 受講生登録メソッド。受講生情報をデータベースのstudentsテーブルに保存
+    // 目的：画面から受け取った受講生基本情報を永続化する
     repository.saveStudent(studentDetail.getStudent());
 
-    //TODO:コース情報登録も行う
-    //for (StudentCourse studentCourse : studentDetail.getStudentsCourses()) {
-    //  repository.saveStudentCourse(studentCourse);
-    //}
+    // コース情報の登録。受講生に紐づく全てのコース情報を処理するループ
+    // 目的：1人の受講生が複数のコースを受講できるようにする
     for (StudentCourse studentCourse : studentDetail.getStudentsCourses()) {
-      studentCourse.setStudentId(studentDetail.getStudent().getStudentId());
+
+      // コースごとに一意のIDを生成
+      // 目的：各コース情報を区別するための識別子を付与
+      String courseUuid = UUID.randomUUID().toString();
+
+      // 生成したUUIDをコース情報に設定
+      // 目的：データベース保存時にコース識別子として使用
+      studentCourse.setCourseId(courseUuid);
+
+      // 受講生IDをコース情報に設定
+      // 目的：コースと受講生を関連付け、どの受講生がどのコースを受講しているかを管理
+      studentCourse.setStudentId(studentUuid);
+
+      // コース開始日を現在日付に設定
+      // 目的：受講開始日を記録し、受講期間管理の基準とする
       studentCourse.setCourseStartDate(LocalDate.now());
+
+      // コース終了予定日を1年後に設定
+      // 目的：標準的な受講期間として1年を設定し、期間管理を可能にする
       studentCourse.setCourseExpectedEndDate(LocalDate.now().plusYears(1));
+
+      // コース情報をデータベースのstudents_coursesテーブルに保存
+      // 目的：受講コース情報を永続化し、後から検索・参照できるようにする
       repository.saveStudentCourse(studentCourse);
     }
   }
