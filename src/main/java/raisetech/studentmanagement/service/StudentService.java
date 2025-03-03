@@ -69,6 +69,8 @@ public class StudentService {
 
     // 生成したUUIDを受講生オブジェクトに設定
     // 目的：データベース保存時に使用するID値を事前に確定させる
+    // StudentDetailオブジェクトから、Student型のオブジェクトを取得。
+    // 取得したStudentオブジェクトのstudentIdフィールドに、UUIDの値をセット
     studentDetail.getStudent().setStudentId(studentUuid);
 
     // 受講生登録メソッド。受講生情報をデータベースのstudentsテーブルに保存
@@ -79,13 +81,11 @@ public class StudentService {
     // 目的：1人の受講生が複数のコースを受講できるようにする
     for (StudentCourse studentCourse : studentDetail.getStudentsCourses()) {
 
-      // コースごとに一意のIDを生成
-      // 目的：各コース情報を区別するための識別子を付与
-      String courseUuid = UUID.randomUUID().toString();
+      // コース名に基づいた固定IDを取得
+      String courseID = getCommonCourseId(studentCourse.getCourseName());
 
-      // 生成したUUIDをコース情報に設定
-      // 目的：データベース保存時にコース識別子として使用
-      studentCourse.setCourseId(courseUuid);
+      // コースIDを設定
+      studentCourse.setCourseId(courseID);
 
       // 受講生IDをコース情報に設定
       // 目的：コースと受講生を関連付け、どの受講生がどのコースを受講しているかを管理
@@ -103,5 +103,68 @@ public class StudentService {
       // 目的：受講コース情報を永続化し、後から検索・参照できるようにする
       repository.saveStudentCourse(studentCourse);
     }
+  }
+
+  // コース名に基づいた固定IDを取得するメソッドを追加
+  private String getCommonCourseId(String courseName) {
+    // コース名に基づいて固定IDを返す
+    switch (courseName) {
+      case "Javaフルコース":
+        return "A001";
+      case "AWSフルコース":
+        return "A002";
+      case "WordPress副業コース":
+        return "A003";
+      case "デザインコース":
+        return "A004";
+      case "Webマーケティングコース":
+        return "A005";
+      default:
+        return "A999"; // 未知のコースの場合
+    }
+  }
+
+  @Transactional
+  public void updateStudentDetail(StudentDetail studentDetail) {
+
+    // 受講生更新メソッド。受講生情報をデータベースのstudentsテーブルに保存
+    // 目的：画面から受け取った受講生基本情報を永続化する
+    repository.updateStudent(studentDetail.getStudent());
+
+    // コース情報の更新。受講生に紐づく全てのコース情報を処理するループ
+    // 目的：1人の受講生が複数のコースを受講できるようにする
+    for (StudentCourse studentCourse : studentDetail.getStudentsCourses()) {
+
+      //フォームから送信された StudentCourse オブジェクトに日付情報がない場合でも、自動的に値が設定されるようになる
+      if (studentCourse.getCourseStartDate() == null) {
+        studentCourse.setCourseStartDate(LocalDate.now());
+      }
+      if (studentCourse.getCourseExpectedEndDate() == null) {
+        studentCourse.setCourseExpectedEndDate(LocalDate.now().plusYears(1));
+      }
+
+      // コース情報をデータベースのstudents_coursesテーブルに保存
+      // 目的：受講コース情報を永続化し、後から検索・参照できるようにする
+      repository.updateStudentCourse(studentCourse);
+    }
+  }
+
+  // 特定のIDを持つ学生の詳細情報を取得するメソッド
+  public StudentDetail getStudentDetailById(String studentId) {
+
+    // 特定のIDを持つ受講生情報を取得
+    Student student = repository.findById(studentId);
+
+    // その学生が受講しているコース情報を取得
+    List<StudentCourse> courses = repository.findCourseById(studentId);
+
+    // 受講生情報とコース情報を組み合わせてStudentDetailを作成
+    // データを格納するための「入れ物」が必要なので、インスタンスを作成する
+    // メソッドを使用し、何かデータが戻ってくるときはインスタンスを自分で作成する必要はない
+    StudentDetail studentDetail = new StudentDetail();
+    studentDetail.setStudent(student);
+    studentDetail.setStudentsCourses(courses);
+
+    return studentDetail;
   }
 }

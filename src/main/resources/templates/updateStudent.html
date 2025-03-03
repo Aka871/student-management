@@ -2,18 +2,24 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>受講生登録</title>
+  <title>受講生更新</title>
 </head>
 <body>
-<h1>受講生登録</h1>
+<h1>受講生更新</h1>
 <!--/*-->
-/registerStudentsは表示するときのURLではなく、POSTするときのURL
-th:action="@{/registerStudents}"： フォームの送信先URL（/registerStudents）を指定
+/updateStudentsは表示するときのURLではなく、POSTするときのURL
+th:action="@{/updateStudents}"： フォームの送信先URL（/updateStudents）を指定
 th:object="${studentDetail}"： フォームの入力データがstudentDetailというインスタンスに保存されることを意味
 フォームに入力された内容は、このインスタンスのプロパティ（nameやage）に自動的にセットされる
 method="post"： フォームのデータがPOSTメソッドを使ってサーバーに送信されることを指定
 <!--*/-->
-<form th:action="@{/registerStudents}" th:object="${studentDetail}" method="post">
+<form th:action="@{/updateStudents}" th:object="${studentDetail}" method="post">
+
+  <!--/*-->
+  student.studentId を隠しフィールドとして追加
+  隠しフィールド（hidden field）とは、ユーザーには表示されないが、フォーム送信時にデータを送るためのHTMLの入力要素
+  <!--*/-->
+  <input type="hidden" th:field="*{student.studentId}"/>
 
   <!--/*-->
   HTMLのタグで、囲んだ部分をブロック要素としてグループ化するためのタグ
@@ -95,10 +101,15 @@ method="post"： フォームのデータがPOSTメソッドを使ってサー�
   </div>
 
   <div th:each="course, stat : *{studentsCourses}">
+
+    <!-- コースIDを隠しフィールドとして追加 -->
+    <input type="hidden" th:field="*{studentsCourses[__${stat.index}__].courseId}"/>
+    <input type="hidden" th:field="*{studentsCourses[__${stat.index}__].studentId}"/>
     <label for="courseName"
            th:for="studentCourse.__${stat.index}__.courseName">受講コース名:</label>
     <select th:id="studentCourse.__${stat.index}__.courseName"
-            th:field="*{studentsCourses[__${stat.index}__].courseName}" required>
+            th:field="*{studentsCourses[__${stat.index}__].courseName}">
+
       <!-- 選択肢を追加 -->
       <option value="">コースを選択してください</option>
       <option value="AWSフルコース">AWSフルコース</option>
@@ -108,12 +119,13 @@ method="post"： フォームのデータがPOSTメソッドを使ってサー�
       <option value="デザインコース">デザインコース</option>
     </select>
   </div>
+  
   <!--/*-->
   submitにしておくと、更新ボタンを押したときに/updateStudentsに対して、データを送信することができる
   余白を追加
   <!--*/-->
   <div style="margin-top: 20px;">
-    <button type="submit" style="margin-right: 15px;">登録</button>
+    <button type="submit" style="margin-right: 15px;">更新</button>
     <a th:href="@{/students}">一覧に戻る</a>
   </div>
 </form>

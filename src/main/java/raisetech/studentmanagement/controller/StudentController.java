@@ -8,6 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -60,11 +61,12 @@ public class StudentController {
     List<StudentCourse> studentsCourses = service.getCourses(null);
 
     //studentList.htmlの<tr th:each="studentDetail : ${students}">のstudentsに値をセット
-    //modelに"students"という名前で、converter.convertStudentDetails()の戻り値を設定する
+    //modelに"studentDetail"という名前で、converter.convertStudentDetails()の戻り値を設定する
     //List<StudentDetail>型のconverter.convertStudentDetails()は、生徒情報とコース情報をもとに、StudentDetailクラスのリストを作成する
     //addAttribute()は、Thymeleafのテンプレートに表示したいデータを渡すために使うもの
     //第一引数は、テンプレートでデータにアクセスするためのキー、第二引数は、テンプレートに表示する実際のデータを指定する
-    model.addAttribute("students", converter.convertStudentDetails(students, studentsCourses));
+    model.addAttribute("studentDetailList",
+        converter.convertStudentDetails(students, studentsCourses));
 
     //ビューの名前を返す。テンプレートファイルの名前が"studentList.html"であることを示している
     return "studentList";
@@ -104,6 +106,7 @@ public class StudentController {
   @GetMapping("/newStudents")
 
   //Webアプリの画面に表示するデータを準備し、テンプレート名を返すメソッド。引数のModelオブジェクトは、テンプレートにデータを渡すためのもの
+  //Controllerがデータを準備する
   public String newStudents(Model model) {
 
     StudentDetail studentDetail = new StudentDetail();
@@ -116,6 +119,7 @@ public class StudentController {
     //model.addAttributeは、テンプレート（ビュー）にデータを渡すためのメソッド
     //空のStudentDetailオブジェクトをテンプレートに渡し、フォームの初期値として使う
     //テンプレートでは、studentDetail.student.fullNameのようにして、StudentDetailオブジェクトのフィールドにアクセスできる
+    //データにstudentDetailという名前をつけてモデルに追加
     model.addAttribute("studentDetail", studentDetail);
 
     //registerStudent.htmlテンプレートを表示するための名前を返す。この名前は、テンプレートファイルの名前と一致している
@@ -139,6 +143,45 @@ public class StudentController {
     //新規受講生を登録する処理を実装する
     //サービス層のregisterStudentメソッドを呼び出し、studentDetailから取り出した学生情報を登録する
     service.registerStudent(studentDetail);
+
+    //学生が登録された後、一覧画面（/students）にリダイレクトして確認できるようにするn
+    return "redirect:/students";
+  }
+
+  @GetMapping("/updateStudents/{studentId}")
+
+  //Webアプリの画面に表示するデータを準備し、テンプレート名を返すメソッド。引数のModelオブジェクトは、テンプレートにデータを渡すためのもの
+  public String getStudentDetailById(@PathVariable String studentId, Model model) {
+
+    // Serviceクラスのメソッドを呼び出して既存データを取得
+    StudentDetail studentDetail = service.getStudentDetailById(studentId);
+
+    //model.addAttributeは、テンプレート（ビュー）にデータを渡すためのメソッド
+    //テンプレートでは、studentDetail.student.fullNameのようにして、StudentDetailオブジェクトのフィールドにアクセスできる
+    //データにstudentDetailという名前をつけてモデルに追加
+    model.addAttribute("studentDetail", studentDetail);
+
+    //updateStudent.htmlテンプレートを表示するための名前を返す。この名前は、テンプレートファイルの名前と一致している
+    return "updateStudent";
+  }
+
+  @PostMapping("/updateStudents")
+
+  //Thymeleafを使うときは確実に行うもの
+  //@ModelAttributeアノテーションを使って、フォームから送信されたStudentDetailのデータを受け取る
+  //BindingResultは、入力チェックの結果を受け取るためのもの
+  //入力チェックしたいものをBindingResultに入れて、エラーが発生したら、元の画面に戻す
+  //ユーザーがフォームに無効なデータを入力した場合（必須項目の未入力、形式エラーなど）を検出
+  //バリデーション機能を追加した際に機能するように準備
+  public String updateStudentDetail(@ModelAttribute StudentDetail studentDetail,
+      BindingResult result) {
+    if (result.hasErrors()) {
+      return "updateStudent";
+    }
+
+    //新規受講生を登録する処理を実装する
+    //サービス層のregisterStudentメソッドを呼び出し、studentDetailから取り出した学生情報を登録する
+    service.updateStudentDetail(studentDetail);
 
     //学生が登録された後、一覧画面（/students）にリダイレクトして確認できるようにする
     return "redirect:/students";
