@@ -15,7 +15,7 @@
     <th>ニックネーム</th>
     <th>電話番号</th>
     <th>メールアドレス</th>
-    <th>住んでいる地域 (市区町村)</th>
+    <th>住んでいる地域 (都道府県市区町村)</th>
     <th>年齢</th>
     <th>性別</th>
     <th>職業</th>
@@ -42,7 +42,6 @@
       <a th:href="@{/updateStudents/{id}(id=${studentDetail.student.studentId})}"
          th:text="${studentDetail.student.fullName}"></a>
     </td>
-    <td th:text="${studentDetail.student.fullName}">山田太郎</td>
     <td th:text="${studentDetail.student.furiganaName}">やまだ たろう</td>
     <td th:text="${studentDetail.student.nickName}">Taro</td>
     <td th:text="${studentDetail.student.phoneNumber}">090-1122-3344</td>
