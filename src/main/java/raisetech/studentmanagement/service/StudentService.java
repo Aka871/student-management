@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import raisetech.studentmanagement.data.CourseType;
 import raisetech.studentmanagement.data.Student;
 import raisetech.studentmanagement.data.StudentCourse;
 import raisetech.studentmanagement.domain.StudentDetail;
@@ -105,23 +106,12 @@ public class StudentService {
     }
   }
 
-  // コース名に基づいた固定IDを取得するメソッドを追加
+  // コース名に基づいて固定IDを取得するメソッド
   private String getCommonCourseId(String courseName) {
-    // コース名に基づいて固定IDを返す
-    switch (courseName) {
-      case "Javaフルコース":
-        return "A001";
-      case "AWSフルコース":
-        return "A002";
-      case "WordPress副業コース":
-        return "A003";
-      case "デザインコース":
-        return "A004";
-      case "Webマーケティングコース":
-        return "A005";
-      default:
-        return "A999"; // 未知のコースの場合
-    }
+
+    // CourseTypeクラスのfromCourseNameメソッドを使い、コース名からCourseType定数(Enum（列挙型）定数)を取得
+    // さらにgetCourseIdメソッドで、その定数のコースIDを取得して返す
+    return CourseType.fromCourseName(courseName).getCourseId();
   }
 
   @Transactional
