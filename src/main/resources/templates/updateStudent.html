@@ -137,12 +137,6 @@ method="post"： フォームのデータがPOSTメソッドを使ってサー�
       <input type="date" th:id="'courseStartDate' + ${stat.index}"
              th:name="'studentsCourses[' + ${stat.index} + '].courseStartDate'"
              th:value="${dates['startDate' + stat.index]}" required/>
-
-      <!--/*-->
-      小さいテキストで説明文を表示する
-      ユーザーが何も入力しなかった場合の動作を教えている
-      <!--*/-->
-      <small>（未入力の場合、今日の日付が設定されます）</small>
     </div>
 
     <div>

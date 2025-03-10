@@ -108,7 +108,7 @@ public class StudentController {
     return converter.convertStudentDetails(students, studentCourses);
   }
 
-  @GetMapping("/newStudents")
+  @GetMapping("/students/new")
 
   //Webアプリの画面に表示するデータを準備し、テンプレート名を返すメソッド。引数のModelオブジェクトは、テンプレートにデータを渡すためのもの
   //Controllerがデータを準備する
@@ -172,7 +172,7 @@ public class StudentController {
     return "redirect:/students";
   }
 
-  @GetMapping("/updateStudents/{studentId}")
+  @GetMapping("/students/{studentId}")
 
   //Webアプリの画面に表示するデータを準備し、テンプレート名を返すメソッド。引数のModelオブジェクトは、テンプレートにデータを渡すためのもの
   public String getStudentDetailById(@PathVariable String studentId, Model model) {

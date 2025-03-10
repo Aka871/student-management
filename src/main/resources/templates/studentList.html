@@ -33,13 +33,13 @@
     <td th:text="${studentDetail.student.studentId}">10</td>
     <td>
       <!--/*-->
-      受講生一覧画面で各受講生の名前をクリック可能にし、そのリンク先を更新画面（/updateStudents/{id}）に設定
+      受講生一覧画面で各受講生の名前をクリック可能にし、そのリンク先を更新画面（/students/{id}）に設定
       th:href - Thymeleafでリンクを動的に生成するための属性
-      @{/updateStudents/{id}(id=${studentDetail.student.studentId})} - URLテンプレートで、{id}
+      @{/students/{id}(id=${studentDetail.student.studentId})} - URLテンプレートで、{id}
       の部分に実際のIDが入る
       th:text - リンクのテキスト部分を動的に設定するための属性
       <!--*/-->
-      <a th:href="@{/updateStudents/{id}(id=${studentDetail.student.studentId})}"
+      <a th:href="@{/students/{id}(id=${studentDetail.student.studentId})}"
          th:text="${studentDetail.student.fullName}"></a>
     </td>
     <td th:text="${studentDetail.student.furiganaName}">やまだ たろう</td>
