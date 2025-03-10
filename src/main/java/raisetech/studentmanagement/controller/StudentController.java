@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import raisetech.studentmanagement.controller.converter.StudentConverter;
+import raisetech.studentmanagement.data.CourseType;
 import raisetech.studentmanagement.data.Student;
 import raisetech.studentmanagement.data.StudentCourse;
 import raisetech.studentmanagement.domain.StudentDetail;
@@ -132,6 +134,12 @@ public class StudentController {
     //データにstudentDetailという名前をつけてモデルに追加
     model.addAttribute("studentDetail", studentDetail);
 
+    // UNKNOWNを除いたCourseTypeの一覧をモデルに追加
+    model.addAttribute("courseTypes",
+        Arrays.stream(CourseType.values())
+            .filter(type -> type != CourseType.UNKNOWN)
+            .collect(Collectors.toList()));
+
     //registerStudent.htmlテンプレートを表示するための名前を返す。この名前は、テンプレートファイルの名前と一致している
     return "registerStudent";
   }
@@ -211,6 +219,19 @@ public class StudentController {
 
     // HTMLでdates['startDate0']のように参照できるようにモデルに追加
     model.addAttribute("dates", dates);
+
+    // UNKNOWNを除いたCourseTypeの一覧をモデルに追加
+    // "courseTypes"という名前で結果をHTMLテンプレートに渡す
+    model.addAttribute("courseTypes",
+
+        // CourseType.values()でEnum定数の配列を取得し、Streamに変換
+        Arrays.stream(CourseType.values())
+
+            // UNKNOWN定数だけを除外する
+            .filter(type -> type != CourseType.UNKNOWN)
+
+            // StreamをListに変換して結果を返す
+            .collect(Collectors.toList()));
 
     //updateStudent.htmlテンプレートを表示するための名前を返す。この名前は、テンプレートファイルの名前と一致している
     return "updateStudent";

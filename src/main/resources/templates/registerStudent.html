@@ -99,15 +99,20 @@ method="post"： フォームのデータがPOSTメソッドを使ってサー�
            th:for="studentCourse.__${stat.index}__.courseName">受講コース名:</label>
     <select th:id="studentCourse.__${stat.index}__.courseName"
             th:field="*{studentsCourses[__${stat.index}__].courseName}" required>
-      <!-- 選択肢を追加 -->
-      <option value="">コースを選択してください</option>
-      <option value="AWSフルコース">AWSフルコース</option>
-      <option value="Javaフルコース">Javaフルコース</option>
-      <option value="Webマーケティングコース">Webマーケティングコース</option>
-      <option value="WordPress副業コース">WordPress副業コース</option>
-      <option value="デザインコース">デザインコース</option>
-    </select>
 
+      <!--/*-->
+      コース選択のドロップダウンメニューを動的に生成
+      - CourseTypeのEnumからコース一覧を自動生成
+      - コースが増減してもHTMLの修正が不要になる
+      CourseTypeの各要素に対してループ処理を行い、それぞれに対してoptionタグを生成する
+      各optionタグのvalue属性に、CourseTypeの日本語名（例：Javaフルコース）を設定する
+      各optionタグの表示テキストに、CourseTypeの日本語名を設定する
+      <!--*/-->
+      <option th:each="courseType : ${courseTypes}"
+              th:value="${courseType.courseName}"
+              th:text="${courseType.courseName}">コース名
+      </option>
+    </select>
     <div>
       <!--/*-->
       ラベル要素を作成し、「コース開始日:」というテキストを表示する
