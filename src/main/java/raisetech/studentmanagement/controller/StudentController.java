@@ -1,7 +1,10 @@
 package raisetech.studentmanagement.controller;
 
+import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -111,6 +114,13 @@ public class StudentController {
 
     StudentDetail studentDetail = new StudentDetail();
 
+    // デフォルトのコース情報を作成
+    StudentCourse course = new StudentCourse();
+
+    // デフォルトの日付を設定
+    course.setCourseStartDate(LocalDate.now());
+    course.setCourseExpectedEndDate(LocalDate.now().plusYears(1));
+
     //StudentDetailの中に「空のコース」を1つ作って入れている。フォームで「コースを入力する欄」を最初から1つ表示するため
     //配列や複数の要素を受け取り、固定サイズのリストを作成するためにArrays.asList()を使用
     //新しいStudentCourse（空のコース）を1つ作り、それをリストにまとめている
@@ -140,6 +150,12 @@ public class StudentController {
       return "registerStudent";
     }
 
+    for (StudentCourse course : studentDetail.getStudentsCourses()) {
+      if (course.getCourseStartDate() != null) {
+        course.setCourseExpectedEndDate(course.getCourseStartDate().plusYears(1));
+      }
+    }
+
     //新規受講生を登録する処理を実装する
     //サービス層のregisterStudentメソッドを呼び出し、studentDetailから取り出した学生情報を登録する
     service.registerStudent(studentDetail);
@@ -156,10 +172,45 @@ public class StudentController {
     // Serviceクラスのメソッドを呼び出して既存データを取得
     StudentDetail studentDetail = service.getStudentDetailById(studentId);
 
+    // 日付の文字列をHTMLに表示するためのマップを作成
+    Map<String, String> dates = new HashMap<>();
+
+    // コース情報のリストをループ処理するためのカウンター
+    int i = 0;
+
+    // 取得した各コースの日付情報をチェックし、nullの場合はデフォルト値を設定
+    // studentDetailから受講コース情報のリスト(studentsCourses)を取得し、各コース情報を1つずつcourse変数に入れて処理
+    // studentDetail：学生一人の情報 + その学生が受講している複数のコース情報
+    // course：コース1つ分の情報（StudentCourse型）
+    for (StudentCourse course : studentDetail.getStudentsCourses()) {
+      if (course.getCourseStartDate() == null) {
+        course.setCourseStartDate(LocalDate.now());
+      }
+      if (course.getCourseExpectedEndDate() == null) {
+        course.setCourseExpectedEndDate(LocalDate.now().plusYears(1));
+      }
+
+      // 日付をThymeleafで表示できるように文字列に変換してマップに保存
+      // 各コースごとに「startDate0」「endDate0」のような名前をつける
+      dates.put("startDate" + i, course.getCourseStartDate().toString());
+      dates.put("endDate" + i, course.getCourseExpectedEndDate().toString());
+
+      // デバッグログを出力
+      System.out.println("Course: " + course.getCourseName() +
+          " Start: " + course.getCourseStartDate() +
+          " End: " + course.getCourseExpectedEndDate());
+
+      // 次のコースのためにカウンターを増やす
+      i++;
+    }
+
     //model.addAttributeは、テンプレート（ビュー）にデータを渡すためのメソッド
     //テンプレートでは、studentDetail.student.fullNameのようにして、StudentDetailオブジェクトのフィールドにアクセスできる
     //データにstudentDetailという名前をつけてモデルに追加
     model.addAttribute("studentDetail", studentDetail);
+
+    // HTMLでdates['startDate0']のように参照できるようにモデルに追加
+    model.addAttribute("dates", dates);
 
     //updateStudent.htmlテンプレートを表示するための名前を返す。この名前は、テンプレートファイルの名前と一致している
     return "updateStudent";
@@ -179,9 +230,16 @@ public class StudentController {
       return "updateStudent";
     }
 
+    for (StudentCourse course : studentDetail.getStudentsCourses()) {
+      if (course.getCourseStartDate() != null) {
+        course.setCourseExpectedEndDate(course.getCourseStartDate().plusYears(1));
+      }
+    }
     //新規受講生を登録する処理を実装する
     //サービス層のregisterStudentメソッドを呼び出し、studentDetailから取り出した学生情報を登録する
-    service.updateStudentDetail(studentDetail);
+    {
+      service.updateStudentDetail(studentDetail);
+    }
 
     //学生が登録された後、一覧画面（/students）にリダイレクトして確認できるようにする
     return "redirect:/students";

@@ -107,7 +107,44 @@ method="post"： フォームのデータがPOSTメソッドを使ってサー�
       <option value="WordPress副業コース">WordPress副業コース</option>
       <option value="デザインコース">デザインコース</option>
     </select>
+
+    <div>
+      <!--/*-->
+      ラベル要素を作成し、「コース開始日:」というテキストを表示する
+      th:for属性は、このラベルがどの入力欄と関連付けられているかを指定する
+      'courseStartDate' + ${stat.index}は、各コース（1番目、2番目...）ごとに違う名前をつける
+      例えば1番目のコースなら「courseStartDate0」、2番目なら「courseStartDate1」となる
+      <!--*/-->
+      <label th:for="'courseStartDate' + ${stat.index}">コース開始日:</label>
+
+      <!--/*-->
+      日付入力フィールドを作成する
+      type="date"は、ブラウザに日付選択用のカレンダーを表示させる
+      th:idは、このフィールドの名前を設定する（ラベルのfor属性と同じ名前にする）
+      th:fieldは、この入力欄に入力された値をどこに保存するかを指定する
+      studentsCourses[__${stat.index}__]の部分は、今処理している順番のコースを指している
+      __${stat.index}__の部分は、Thymeleafが数字として評価するための特殊な書き方
+      例えば1番目のコースなら「studentsCourses[0]」、2番目なら「studentsCourses[1]」となる
+      requiredは、この項目が必須であることを示す
+      <!--*/-->
+      <input type="date" th:id="'courseStartDate' + ${stat.index}"
+             th:field="*{studentsCourses[__${stat.index}__].courseStartDate}" required/>
+
+      <!--/*-->
+      小さいテキストで説明文を表示する
+      ユーザーが何も入力しなかった場合の動作を教えている
+      <!--*/-->
+      <small>（未入力の場合、今日の日付が設定されます）</small>
+    </div>
+
+    <div>
+      <label th:for="'courseExpectedEndDate' + ${stat.index}">コース終了予定日:</label>
+      <input type="date" th:id="'courseExpectedEndDate' + ${stat.index}"
+             th:field="*{studentsCourses[__${stat.index}__].courseExpectedEndDate}" readonly/>
+      <small>（コース開始日の1年後に自動設定されます）</small>
+    </div>
   </div>
+
   <!--/*-->
   submitにしておくと、更新ボタンを押したときに/updateStudentsに対して、データを送信することができる
   余白を追加
