@@ -11,6 +11,7 @@ import raisetech.studentmanagement.data.CourseType;
 import raisetech.studentmanagement.data.Student;
 import raisetech.studentmanagement.data.StudentCourse;
 import raisetech.studentmanagement.domain.StudentDetail;
+import raisetech.studentmanagement.exception.StudentNotFoundException;
 import raisetech.studentmanagement.repository.StudentRepository;
 
 //ビジネスロジックを記述するクラスには@Serviceアノテーションを付与。そのクラスはBean化され、内部メモリ上に格納される
@@ -145,7 +146,13 @@ public class StudentService {
     // 特定のIDを持つ受講生情報を取得
     Student student = repository.findById(studentId);
 
-    // その学生が受講しているコース情報を取得
+    // 該当する受講生が見つからない場合の処理
+    if (student == null) {
+      // StudentNotFoundExceptionをスローして処理を中断し、エラー処理に移る
+      throw new StudentNotFoundException(studentId);
+    }
+
+    // 受講生が受講しているコース情報を取得
     List<StudentCourse> courses = repository.findCourseById(studentId);
 
     // 受講生情報とコース情報を組み合わせてStudentDetailを作成
