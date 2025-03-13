@@ -15,7 +15,7 @@
     <th>ニックネーム</th>
     <th>電話番号</th>
     <th>メールアドレス</th>
-    <th>住んでいる地域 (市区町村)</th>
+    <th>住んでいる地域 (都道府県市区町村)</th>
     <th>年齢</th>
     <th>性別</th>
     <th>職業</th>
@@ -23,9 +23,25 @@
   </tr>
   </thead>
   <tbody>
-  <tr th:each="studentDetail : ${students}">
+  <!--/*-->
+  HTMLがデータを表示する
+  studentDetailListという名前のデータを1つずつ取り出して、変数studentDetailに入れる
+  ${studentDetailList}リストの各要素はStudentDetail型のオブジェクト
+  studentDetail は StudentDetail 型のオブジェクトを一時的に保存するための変数名
+  <!--*/-->
+  <tr th:each="studentDetail : ${studentDetailList}">
     <td th:text="${studentDetail.student.studentId}">10</td>
-    <td th:text="${studentDetail.student.fullName}">山田太郎</td>
+    <td>
+      <!--/*-->
+      受講生一覧画面で各受講生の名前をクリック可能にし、そのリンク先を更新画面（/students/{id}）に設定
+      th:href - Thymeleafでリンクを動的に生成するための属性
+      @{/students/{id}(id=${studentDetail.student.studentId})} - URLテンプレートで、{id}
+      の部分に実際のIDが入る
+      th:text - リンクのテキスト部分を動的に設定するための属性
+      <!--*/-->
+      <a th:href="@{/students/{id}(id=${studentDetail.student.studentId})}"
+         th:text="${studentDetail.student.fullName}"></a>
+    </td>
     <td th:text="${studentDetail.student.furiganaName}">やまだ たろう</td>
     <td th:text="${studentDetail.student.nickName}">Taro</td>
     <td th:text="${studentDetail.student.phoneNumber}">090-1122-3344</td>

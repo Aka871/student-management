@@ -2,18 +2,24 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>受講生登録</title>
+  <title>受講生更新</title>
 </head>
 <body>
-<h1>受講生登録</h1>
+<h1>受講生更新</h1>
 <!--/*-->
-/registerStudentsは表示するときのURLではなく、POSTするときのURL
-th:action="@{/registerStudents}"： フォームの送信先URL（/registerStudents）を指定
+/updateStudentsは表示するときのURLではなく、POSTするときのURL
+th:action="@{/updateStudents}"： フォームの送信先URL（/updateStudents）を指定
 th:object="${studentDetail}"： フォームの入力データがstudentDetailというインスタンスに保存されることを意味
 フォームに入力された内容は、このインスタンスのプロパティ（nameやage）に自動的にセットされる
 method="post"： フォームのデータがPOSTメソッドを使ってサーバーに送信されることを指定
 <!--*/-->
-<form th:action="@{/registerStudents}" th:object="${studentDetail}" method="post">
+<form th:action="@{/updateStudents}" th:object="${studentDetail}" method="post">
+
+  <!--/*-->
+  student.studentId を隠しフィールドとして追加
+  隠しフィールド（hidden field）とは、ユーザーには表示されないが、フォーム送信時にデータを送るためのHTMLの入力要素
+  <!--*/-->
+  <input type="hidden" th:field="*{student.studentId}"/>
 
   <!--/*-->
   HTMLのタグで、囲んだ部分をブロック要素としてグループ化するためのタグ
@@ -95,24 +101,21 @@ method="post"： フォームのデータがPOSTメソッドを使ってサー�
   </div>
 
   <div th:each="course, stat : *{studentsCourses}">
+
+    <!-- コースIDを隠しフィールドとして追加 -->
+    <input type="hidden" th:field="*{studentsCourses[__${stat.index}__].courseId}"/>
+    <input type="hidden" th:field="*{studentsCourses[__${stat.index}__].studentId}"/>
     <label for="courseName"
            th:for="studentCourse.__${stat.index}__.courseName">受講コース名:</label>
     <select th:id="studentCourse.__${stat.index}__.courseName"
             th:field="*{studentsCourses[__${stat.index}__].courseName}" required>
 
-      <!--/*-->
-      コース選択のドロップダウンメニューを動的に生成
-      - CourseTypeのEnumからコース一覧を自動生成
-      - コースが増減してもHTMLの修正が不要になる
-      CourseTypeの各要素に対してループ処理を行い、それぞれに対してoptionタグを生成する
-      各optionタグのvalue属性に、CourseTypeの日本語名（例：Javaフルコース）を設定する
-      各optionタグの表示テキストに、CourseTypeの日本語名を設定する
-      <!--*/-->
+      <!-- 選択肢を追加 -->
       <option th:each="courseType : ${courseTypes}"
               th:value="${courseType.courseName}"
-              th:text="${courseType.courseName}">コース名
-      </option>
+              th:text="${courseType.courseName}">コース名</option>
     </select>
+
     <div>
       <!--/*-->
       ラベル要素を作成し、「コース開始日:」というテキストを表示する
@@ -125,33 +128,33 @@ method="post"： フォームのデータがPOSTメソッドを使ってサー�
       <!--/*-->
       日付入力フィールドを作成する
       type="date"は、ブラウザに日付選択用のカレンダーを表示させる
-      th:idは、このフィールドの名前を設定する（ラベルのfor属性と同じ名前にする）
-      th:fieldは、この入力欄に入力された値をどこに保存するかを指定する
-      studentsCourses[__${stat.index}__]の部分は、今処理している順番のコースを指している
-      __${stat.index}__の部分は、Thymeleafが数字として評価するための特殊な書き方
-      例えば1番目のコースなら「studentsCourses[0]」、2番目なら「studentsCourses[1]」となる
+      th:idは、このフィールドの識別子を設定する（ラベルのfor属性と同じ名前にする）
+      th:nameは、送信時のパラメータ名を指定する
+      th:valueは、入力欄に表示する初期値を設定する
+      dates['startDate' + stat.index]は、コントローラから渡された日付の文字列
       requiredは、この項目が必須であることを示す
       <!--*/-->
       <input type="date" th:id="'courseStartDate' + ${stat.index}"
-             th:field="*{studentsCourses[__${stat.index}__].courseStartDate}" required/>
+             th:name="'studentsCourses[' + ${stat.index} + '].courseStartDate'"
+             th:value="${dates['startDate' + stat.index]}" required/>
     </div>
 
     <div>
       <label th:for="'courseExpectedEndDate' + ${stat.index}">コース終了予定日:</label>
       <input type="date" th:id="'courseExpectedEndDate' + ${stat.index}"
-             th:field="*{studentsCourses[__${stat.index}__].courseExpectedEndDate}" readonly/>
+             th:name="'studentsCourses[' + ${stat.index} + '].courseExpectedEndDate'"
+             th:value="${dates['endDate' + stat.index]}" readonly/>
       <small>（コース開始日の1年後に自動設定されます）</small>
     </div>
-  </div>
 
-  <!--/*-->
-  submitにしておくと、更新ボタンを押したときに/updateStudentsに対して、データを送信することができる
-  余白を追加
-  <!--*/-->
-  <div style="margin-top: 20px;">
-    <button type="submit" style="margin-right: 15px;">登録</button>
-    <a th:href="@{/students}">一覧に戻る</a>
-  </div>
+    <!--/*-->
+    submitにしておくと、更新ボタンを押したときに/updateStudentsに対して、データを送信することができる
+    余白を追加
+    <!--*/-->
+    <div style="margin-top: 20px;">
+      <button type="submit" style="margin-right: 15px;">登録</button>
+      <a th:href="@{/students}">一覧に戻る</a>
+    </div>
 </form>
 </body>
 </html>
