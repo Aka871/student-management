@@ -203,11 +203,6 @@ public class StudentController {
       dates.put("startDate" + i, course.getCourseStartDate().toString());
       dates.put("endDate" + i, course.getCourseExpectedEndDate().toString());
 
-      // デバッグログを出力
-      System.out.println("Course: " + course.getCourseName() +
-          " Start: " + course.getCourseStartDate() +
-          " End: " + course.getCourseExpectedEndDate());
-
       // 次のコースのためにカウンターを増やす
       i++;
     }

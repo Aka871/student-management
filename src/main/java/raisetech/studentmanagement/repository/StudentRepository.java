@@ -62,7 +62,8 @@ public interface StudentRepository {
   void saveStudentCourse(StudentCourse studentCourse);
 
   @Update(
-      "UPDATE students SET full_name = #{fullName}, furigana_name = #{furiganaName}, nick_name = #{nickName}, phone_number = #{phoneNumber}, mail_address = #{mailAddress}, municipality_name = #{municipalityName}, age = #{age}, sex = #{sex}, occupation = #{occupation}, remark = #{remark} WHERE student_id = #{studentId}")
+      "UPDATE students SET full_name = #{fullName}, furigana_name = #{furiganaName}, nick_name = #{nickName}, phone_number = #{phoneNumber}, mail_address = #{mailAddress},"
+          + " municipality_name = #{municipalityName}, age = #{age}, sex = #{sex}, occupation = #{occupation}, remark = #{remark}, isDeleted = #{isDeleted} WHERE student_id = #{studentId}")
   void updateStudent(Student student);
 
   @Update(
