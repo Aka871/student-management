@@ -20,7 +20,8 @@ public interface StudentRepository {
   //@Selectアノテーションは、このメソッドがSQLのSELECT文を実行することを指定
   //"SELECT * FROM students" は、students テーブルからすべての列と行を取得するSQLクエリ
   //引数なしで呼び出され、すべての学生データをStudentオブジェクトのリストとして返す
-  @Select("SELECT * FROM students")
+  //MyBatisのSQLにカラム名エイリアス(isDeleted AS deleted)を追加。DBのカラム名isDeletedとJavaフィールド名deletedを紐付け
+  @Select("SELECT *, isDeleted AS deleted FROM students")
   List<Student> searchStudents();
 
   @Select("SELECT * FROM students_courses")
@@ -29,6 +30,7 @@ public interface StudentRepository {
   // 受講生のIDを指定して、1人の学生データを取得
   // students テーブルから、student_id が指定された値と一致するレコードを取得する
   // #{studentId} の部分は、メソッドの引数 studentId の値が埋め込まれる
+  // MyBatisのSQLにカラム名エイリアス(isDeleted AS deleted)を追加。DBのカラム名isDeletedとJavaフィールド名deletedを紐付け
   @Select("SELECT *, isDeleted AS deleted FROM students WHERE student_id = #{studentId}")
   Student findById(String studentId);
 

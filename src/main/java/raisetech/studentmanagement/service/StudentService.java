@@ -164,4 +164,12 @@ public class StudentService {
 
     return studentDetail;
   }
+
+  // 削除登録されていない受講生のみを受講生一覧に表示する
+  public List<Student> getNotDeletedStudents() {
+    List<Student> allStudents = repository.searchStudents();
+    return allStudents.stream()
+        .filter(student -> !student.isDeleted())
+        .collect(Collectors.toList());
+  }
 }

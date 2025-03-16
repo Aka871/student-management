@@ -23,5 +23,7 @@ public class Student {
   private String sex;
   private String occupation;
   private String remark;
+
+  //フィールド名をdeletedにした。thymeleafとの連携問題を解決するため
   private boolean deleted;
 }

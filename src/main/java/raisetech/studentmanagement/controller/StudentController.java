@@ -60,9 +60,9 @@ public class StudentController {
   //Model型のパラメータ(呼び出し元が値を定義する特殊な変数)modelを受け取る。これにデータを設定すると、ビューに渡すことができる
   public String getStudents(Model model) {
 
-    //すべての生徒情報とコース情報を取得(引数がnullのため)
+    //論理削除されていない生徒情報とコース情報を取得(引数がnullのため)
     //List<Student>の中には、Studentクラスのインスタンスが格納されている。変数名は任意で良い
-    List<Student> students = service.getStudents(null, null);
+    List<Student> students = service.getNotDeletedStudents();
     List<StudentCourse> studentsCourses = service.getCourses(null);
 
     //studentList.htmlの<tr th:each="studentDetail : ${students}">のstudentsに値をセット
