@@ -145,7 +145,11 @@ method="post"： フォームのデータがPOSTメソッドを使ってサー�
              th:name="'studentsCourses[' + ${stat.index} + '].courseExpectedEndDate'"
              th:value="${dates['endDate' + stat.index]}" readonly/>
       <small>（コース開始日の1年後に自動設定されます）</small>
-    </div>
+
+      <div>
+        <label for="isDeleted">削除</label>
+        <input type="checkbox" id="isDeleted" th:field="*{student.deleted}"/>
+      </div>
 
     <!--/*-->
     submitにしておくと、更新ボタンを押したときに/updateStudentsに対して、データを送信することができる

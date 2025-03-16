@@ -29,7 +29,7 @@ public interface StudentRepository {
   // 受講生のIDを指定して、1人の学生データを取得
   // students テーブルから、student_id が指定された値と一致するレコードを取得する
   // #{studentId} の部分は、メソッドの引数 studentId の値が埋め込まれる
-  @Select("SELECT * FROM students WHERE student_id = #{studentId}")
+  @Select("SELECT *, isDeleted AS deleted FROM students WHERE student_id = #{studentId}")
   Student findById(String studentId);
 
   // 受講生のIDを指定して、すべてのコース情報を取得
@@ -63,7 +63,7 @@ public interface StudentRepository {
 
   @Update(
       "UPDATE students SET full_name = #{fullName}, furigana_name = #{furiganaName}, nick_name = #{nickName}, phone_number = #{phoneNumber}, mail_address = #{mailAddress},"
-          + " municipality_name = #{municipalityName}, age = #{age}, sex = #{sex}, occupation = #{occupation}, remark = #{remark}, isDeleted = #{isDeleted} WHERE student_id = #{studentId}")
+          + " municipality_name = #{municipalityName}, age = #{age}, sex = #{sex}, occupation = #{occupation}, remark = #{remark}, isDeleted = #{deleted} WHERE student_id = #{studentId}")
   void updateStudent(Student student);
 
   @Update(
