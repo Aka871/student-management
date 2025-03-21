@@ -7,15 +7,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import raisetech.studentmanagement.controller.converter.StudentConverter;
 import raisetech.studentmanagement.data.CourseType;
 import raisetech.studentmanagement.data.Student;
@@ -23,10 +25,10 @@ import raisetech.studentmanagement.data.StudentCourse;
 import raisetech.studentmanagement.domain.StudentDetail;
 import raisetech.studentmanagement.service.StudentService;
 
-//@Controllerアノテーションを付与したクラスはまず、クライアントから送られてきたリクエストを受け取る
-//受け取ったリクエストに基づき、適切なビジネスロジックを呼び出す
-//ビジネスロジックから得られた結果をレスポンスデータとしてビューに渡し、クライアントに返却する
-@Controller
+// @RestControllerを付けることで、このクラスがREST APIのコントローラーであることを示す
+// クライアント(Postmanなど)からのリクエストに対して、JSON形式のレスポンスを返す
+// @Controller + @ResponseBodyの組み合わせと同じ機能を持つ
+@RestController
 public class StudentController {
 
   //クラス内で使う変数(フィールド)を定義
@@ -54,27 +56,17 @@ public class StudentController {
 
   //URLパス"/students"にアクセスした際に、このメソッドが呼び出される
   @GetMapping("/students")
-
-  //Thymeleafを使用して使われるHTMLのビューにデータを渡して、ブラウザに表示できるようにするメソッド
-  //戻り値の型はStringで、ビューの名前を指定する
-  //Model型のパラメータ(呼び出し元が値を定義する特殊な変数)modelを受け取る。これにデータを設定すると、ビューに渡すことができる
-  public String getStudents(Model model) {
+  public List<StudentDetail> getStudents() {
 
     //論理削除されていない生徒情報とコース情報を取得(引数がnullのため)
     //List<Student>の中には、Studentクラスのインスタンスが格納されている。変数名は任意で良い
     List<Student> students = service.getNotDeletedStudents();
+
+    // すべての受講コース情報を取得（フィルタなし）
     List<StudentCourse> studentsCourses = service.getCourses(null);
 
-    //studentList.htmlの<tr th:each="studentDetail : ${students}">のstudentsに値をセット
-    //modelに"studentDetail"という名前で、converter.convertStudentDetails()の戻り値を設定する
-    //List<StudentDetail>型のconverter.convertStudentDetails()は、生徒情報とコース情報をもとに、StudentDetailクラスのリストを作成する
-    //addAttribute()は、Thymeleafのテンプレートに表示したいデータを渡すために使うもの
-    //第一引数は、テンプレートでデータにアクセスするためのキー、第二引数は、テンプレートに表示する実際のデータを指定する
-    model.addAttribute("studentDetailList",
-        converter.convertStudentDetails(students, studentsCourses));
-
-    //ビューの名前を返す。テンプレートファイルの名前が"studentList.html"であることを示している
-    return "studentList";
+    // 生徒情報とコース情報を統合し、リストとして返す
+    return converter.convertStudentDetails(students, studentsCourses);
   }
 
   @GetMapping("/courses")
@@ -234,30 +226,18 @@ public class StudentController {
 
   @PostMapping("/updateStudents")
 
-  //Thymeleafを使うときは確実に行うもの
-  //@ModelAttributeアノテーションを使って、フォームから送信されたStudentDetailのデータを受け取る
-  //BindingResultは、入力チェックの結果を受け取るためのもの
-  //入力チェックしたいものをBindingResultに入れて、エラーが発生したら、元の画面に戻す
-  //ユーザーがフォームに無効なデータを入力した場合（必須項目の未入力、形式エラーなど）を検出
-  //バリデーション機能を追加した際に機能するように準備
-  public String updateStudentDetail(@ModelAttribute StudentDetail studentDetail,
-      BindingResult result) {
-    if (result.hasErrors()) {
-      return "updateStudent";
-    }
-
+// ResponseEntityは、SpringBootでHTTPレスポンスを返すための特別なクラス
+// ResponseEntity<String> を使用して、更新結果のメッセージをHTTPレスポンスとして返す
+// @RequestBodyにより、リクエストのJSONデータをStudentDetail型のオブジェクトとして受け取る
+  public ResponseEntity<String> updateStudentDetail(@RequestBody StudentDetail studentDetail) {
     for (StudentCourse course : studentDetail.getStudentsCourses()) {
       if (course.getCourseStartDate() != null) {
         course.setCourseExpectedEndDate(course.getCourseStartDate().plusYears(1));
+        //新規受講生を登録する処理を実装する
+        //サービス層のregisterStudentメソッドを呼び出し、studentDetailから取り出した学生情報を登録する
+        service.updateStudentDetail(studentDetail);
       }
     }
-    //新規受講生を登録する処理を実装する
-    //サービス層のregisterStudentメソッドを呼び出し、studentDetailから取り出した学生情報を登録する
-    {
-      service.updateStudentDetail(studentDetail);
-    }
-
-    //学生が登録された後、一覧画面（/students）にリダイレクトして確認できるようにする
-    return "redirect:/students";
+    return ResponseEntity.ok("更新処理が成功しました！");
   }
 }
