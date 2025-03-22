@@ -107,6 +107,34 @@ public class StudentService {
     }
   }
 
+  /*
+    private String getCommonCourseId(String courseName) {
+
+  // コース名とコースIDの直接マッピング
+      //if (courseName == null) {
+        return "A999";
+      }
+
+      if (courseName.equals("Javaフルコース")) {
+        return "A001";
+      }
+      if (courseName.equals("AWSフルコース")) {
+        return "A002";
+      }
+      if (courseName.equals("WordPress副業コース")) {
+        return "A003";
+      }
+      if (courseName.equals("デザインコース")) {
+        return "A004";
+      }
+      if (courseName.equals("Webマーケティングコース")) {
+        return "A005";
+      }
+
+      return "A999";
+    }
+
+  */
   // コース名に基づいて固定IDを取得するメソッド
   private String getCommonCourseId(String courseName) {
 
@@ -126,6 +154,13 @@ public class StudentService {
     // 目的：1人の受講生が複数のコースを受講できるようにする
     for (StudentCourse studentCourse : studentDetail.getStudentsCourses()) {
 
+      // コース名からコースIDを取得(コースIDを明示的に設定)
+      String courseID = CourseType.fromCourseName(studentCourse.getCourseName()).getCourseId();
+      studentCourse.setCourseId(courseID);
+      // コース名からコースIDを取得
+      //String courseID = getCommonCourseId(studentCourse.getCourseName());
+      //studentCourse.setCourseId(courseID);
+
       //フォームから送信された StudentCourse オブジェクトに日付情報がない場合でも、自動的に値が設定されるようになる
       if (studentCourse.getCourseStartDate() == null) {
         studentCourse.setCourseStartDate(LocalDate.now());
@@ -134,9 +169,41 @@ public class StudentService {
         studentCourse.setCourseExpectedEndDate(LocalDate.now().plusYears(1));
       }
 
+      // デバッグ用に出力
+      System.out.println("更新するコース情報: ID=" + courseID +
+          ", 名前=" + studentCourse.getCourseName() +
+          ", 開始日=" + studentCourse.getCourseStartDate());
+
+      // レコードの存在確認
+      List<StudentCourse> existingCourses = repository.findCourseById(studentCourse.getStudentId());
+      boolean courseExists = false;
+
+      for (StudentCourse existing : existingCourses) {
+        if (existing.getCourseId().equals(courseID)) {
+          courseExists = true;
+          break;
+        }
+      }
+
+      // SQLの実行前
+      System.out.println("SQL実行前: " + studentCourse.getStudentId() + ", "
+          + studentCourse.getCourseId());
+
+      if (courseExists) {
+        // 既存のコースを更新
+        System.out.println("既存コースを更新します");
+        repository.updateStudentCourse(studentCourse);
+      } else {
+        // 新規コースとして登録
+        System.out.println("新規コースとして登録します");
+        repository.saveStudentCourse(studentCourse);
+      }
       // コース情報をデータベースのstudents_coursesテーブルに保存
       // 目的：受講コース情報を永続化し、後から検索・参照できるようにする
-      repository.updateStudentCourse(studentCourse);
+      // repository.updateStudentCourse(studentCourse);
+
+      // SQLの実行後
+      System.out.println("SQL実行完了");
     }
   }
 

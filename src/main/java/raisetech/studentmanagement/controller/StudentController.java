@@ -225,19 +225,18 @@ public class StudentController {
   }
 
   @PostMapping("/updateStudents")
-
-// ResponseEntityは、SpringBootでHTTPレスポンスを返すための特別なクラス
-// ResponseEntity<String> を使用して、更新結果のメッセージをHTTPレスポンスとして返す
-// @RequestBodyにより、リクエストのJSONデータをStudentDetail型のオブジェクトとして受け取る
+  // ResponseEntityは、SpringBootでHTTPレスポンスを返すための特別なクラス
+  // ResponseEntity<String> を使用して、更新結果のメッセージをHTTPレスポンスとして返す
+  // @RequestBodyにより、リクエストのJSONデータをStudentDetail型のオブジェクトとして受け取る
   public ResponseEntity<String> updateStudentDetail(@RequestBody StudentDetail studentDetail) {
     for (StudentCourse course : studentDetail.getStudentsCourses()) {
       if (course.getCourseStartDate() != null) {
         course.setCourseExpectedEndDate(course.getCourseStartDate().plusYears(1));
-        //新規受講生を登録する処理を実装する
-        //サービス層のregisterStudentメソッドを呼び出し、studentDetailから取り出した学生情報を登録する
-        service.updateStudentDetail(studentDetail);
       }
     }
+    //新規受講生を登録する処理を実装する
+    //サービス層のregisterStudentメソッドを呼び出し、studentDetailから取り出した学生情報を登録する
+    service.updateStudentDetail(studentDetail);
     return ResponseEntity.ok("更新処理が成功しました！");
   }
 }
