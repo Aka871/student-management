@@ -107,34 +107,6 @@ public class StudentService {
     }
   }
 
-  /*
-    private String getCommonCourseId(String courseName) {
-
-  // コース名とコースIDの直接マッピング
-      //if (courseName == null) {
-        return "A999";
-      }
-
-      if (courseName.equals("Javaフルコース")) {
-        return "A001";
-      }
-      if (courseName.equals("AWSフルコース")) {
-        return "A002";
-      }
-      if (courseName.equals("WordPress副業コース")) {
-        return "A003";
-      }
-      if (courseName.equals("デザインコース")) {
-        return "A004";
-      }
-      if (courseName.equals("Webマーケティングコース")) {
-        return "A005";
-      }
-
-      return "A999";
-    }
-
-  */
   // コース名に基づいて固定IDを取得するメソッド
   private String getCommonCourseId(String courseName) {
 
@@ -157,9 +129,6 @@ public class StudentService {
       // コース名からコースIDを取得(コースIDを明示的に設定)
       String courseID = CourseType.fromCourseName(studentCourse.getCourseName()).getCourseId();
       studentCourse.setCourseId(courseID);
-      // コース名からコースIDを取得
-      //String courseID = getCommonCourseId(studentCourse.getCourseName());
-      //studentCourse.setCourseId(courseID);
 
       //フォームから送信された StudentCourse オブジェクトに日付情報がない場合でも、自動的に値が設定されるようになる
       if (studentCourse.getCourseStartDate() == null) {
@@ -169,15 +138,12 @@ public class StudentService {
         studentCourse.setCourseExpectedEndDate(LocalDate.now().plusYears(1));
       }
 
-      // デバッグ用に出力
-      System.out.println("更新するコース情報: ID=" + courseID +
-          ", 名前=" + studentCourse.getCourseName() +
-          ", 開始日=" + studentCourse.getCourseStartDate());
-
       // レコードの存在確認
+      // 目的：該当するコースがDB上に存在するか確認し、適切な処理（更新または新規登録）を行う
       List<StudentCourse> existingCourses = repository.findCourseById(studentCourse.getStudentId());
       boolean courseExists = false;
 
+      // 該当する受講生が受講している全コースから、更新対象のコースIDと一致するものを探す
       for (StudentCourse existing : existingCourses) {
         if (existing.getCourseId().equals(courseID)) {
           courseExists = true;
@@ -185,29 +151,19 @@ public class StudentService {
         }
       }
 
-      // SQLの実行前
-      System.out.println("SQL実行前: " + studentCourse.getStudentId() + ", "
-          + studentCourse.getCourseId());
-
+      // 該当コースが存在する場合は更新、存在しない場合は新規登録を行う
+      // 目的：APIからの更新リクエストを柔軟に処理し、データの整合性を保つ
       if (courseExists) {
         // 既存のコースを更新
-        System.out.println("既存コースを更新します");
         repository.updateStudentCourse(studentCourse);
       } else {
         // 新規コースとして登録
-        System.out.println("新規コースとして登録します");
         repository.saveStudentCourse(studentCourse);
       }
-      // コース情報をデータベースのstudents_coursesテーブルに保存
-      // 目的：受講コース情報を永続化し、後から検索・参照できるようにする
-      // repository.updateStudentCourse(studentCourse);
-
-      // SQLの実行後
-      System.out.println("SQL実行完了");
     }
   }
 
-  // 特定のIDを持つ学生の詳細情報を取得するメソッド
+  // 特定のIDを持つ受講生の詳細情報を取得するメソッド
   public StudentDetail getStudentDetailById(String studentId) {
 
     // 特定のIDを持つ受講生情報を取得
