@@ -1,14 +1,9 @@
 package raisetech.studentmanagement.controller;
 
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import raisetech.studentmanagement.controller.converter.StudentConverter;
-import raisetech.studentmanagement.data.CourseType;
 import raisetech.studentmanagement.data.Student;
 import raisetech.studentmanagement.data.StudentCourse;
 import raisetech.studentmanagement.domain.StudentDetail;
@@ -97,43 +91,7 @@ public class StudentController {
     //List<StudentDetail>型のconverter.convertStudentDetails()は、生徒情報とコース情報をもとに、StudentDetailクラスのリストを作成して返す
     return converter.convertStudentDetails(students, studentCourses);
   }
-
-  @GetMapping("/students/new")
-
-  //Webアプリの画面に表示するデータを準備し、テンプレート名を返すメソッド。引数のModelオブジェクトは、テンプレートにデータを渡すためのもの
-  //Controllerがデータを準備する
-  public String newStudents(Model model) {
-
-    StudentDetail studentDetail = new StudentDetail();
-
-    // デフォルトのコース情報を作成
-    StudentCourse course = new StudentCourse();
-
-    // デフォルトの日付を設定
-    course.setCourseStartDate(LocalDate.now());
-    course.setCourseExpectedEndDate(LocalDate.now().plusYears(1));
-
-    //StudentDetailの中に「空のコース」を1つ作って入れている。フォームで「コースを入力する欄」を最初から1つ表示するため
-    //配列や複数の要素を受け取り、固定サイズのリストを作成するためにArrays.asList()を使用
-    //新しいStudentCourse（空のコース）を1つ作り、それをリストにまとめている
-    studentDetail.setStudentsCourses(Arrays.asList(new StudentCourse()));
-
-    //model.addAttributeは、テンプレート（ビュー）にデータを渡すためのメソッド
-    //空のStudentDetailオブジェクトをテンプレートに渡し、フォームの初期値として使う
-    //テンプレートでは、studentDetail.student.fullNameのようにして、StudentDetailオブジェクトのフィールドにアクセスできる
-    //データにstudentDetailという名前をつけてモデルに追加
-    model.addAttribute("studentDetail", studentDetail);
-
-    // UNKNOWNを除いたCourseTypeの一覧をモデルに追加
-    model.addAttribute("courseTypes",
-        Arrays.stream(CourseType.values())
-            .filter(type -> type != CourseType.UNKNOWN)
-            .collect(Collectors.toList()));
-
-    //registerStudent.htmlテンプレートを表示するための名前を返す。この名前は、テンプレートファイルの名前と一致している
-    return "registerStudent";
-  }
-
+  
   @PostMapping("/registerStudents")
 
   // ResponseEntityは、SpringBootでHTTPレスポンスを返すための特別なクラス
@@ -154,17 +112,10 @@ public class StudentController {
 
   @GetMapping("/students/{studentId}")
 
-  //Webアプリの画面に表示するデータを準備し、テンプレート名を返すメソッド。引数のModelオブジェクトは、テンプレートにデータを渡すためのもの
-  public String getStudentDetailById(@PathVariable String studentId, Model model) {
+  public ResponseEntity<StudentDetail> getStudentById(@PathVariable String studentId) {
 
     // Serviceクラスのメソッドを呼び出して既存データを取得
     StudentDetail studentDetail = service.getStudentDetailById(studentId);
-
-    // 日付の文字列をHTMLに表示するためのマップを作成
-    Map<String, String> dates = new HashMap<>();
-
-    // コース情報のリストをループ処理するためのカウンター
-    int i = 0;
 
     // 取得した各コースの日付情報をチェックし、nullの場合はデフォルト値を設定
     // studentDetailから受講コース情報のリスト(studentsCourses)を取得し、各コース情報を1つずつcourse変数に入れて処理
@@ -177,39 +128,10 @@ public class StudentController {
       if (course.getCourseExpectedEndDate() == null) {
         course.setCourseExpectedEndDate(LocalDate.now().plusYears(1));
       }
-
-      // 日付をThymeleafで表示できるように文字列に変換してマップに保存
-      // 各コースごとに「startDate0」「endDate0」のような名前をつける
-      dates.put("startDate" + i, course.getCourseStartDate().toString());
-      dates.put("endDate" + i, course.getCourseExpectedEndDate().toString());
-
-      // 次のコースのためにカウンターを増やす
-      i++;
     }
 
-    //model.addAttributeは、テンプレート（ビュー）にデータを渡すためのメソッド
-    //テンプレートでは、studentDetail.student.fullNameのようにして、StudentDetailオブジェクトのフィールドにアクセスできる
-    //データにstudentDetailという名前をつけてモデルに追加
-    model.addAttribute("studentDetail", studentDetail);
-
-    // HTMLでdates['startDate0']のように参照できるようにモデルに追加
-    model.addAttribute("dates", dates);
-
-    // UNKNOWNを除いたCourseTypeの一覧をモデルに追加
-    // "courseTypes"という名前で結果をHTMLテンプレートに渡す
-    model.addAttribute("courseTypes",
-
-        // CourseType.values()でEnum定数の配列を取得し、Streamに変換
-        Arrays.stream(CourseType.values())
-
-            // UNKNOWN定数だけを除外する
-            .filter(type -> type != CourseType.UNKNOWN)
-
-            // StreamをListに変換して結果を返す
-            .collect(Collectors.toList()));
-
-    //updateStudent.htmlテンプレートを表示するための名前を返す。この名前は、テンプレートファイルの名前と一致している
-    return "updateStudent";
+    // StudentDetailオブジェクトをそのままJSON形式で返す
+    return ResponseEntity.ok(studentDetail);
   }
 
   @PostMapping("/updateStudents")
