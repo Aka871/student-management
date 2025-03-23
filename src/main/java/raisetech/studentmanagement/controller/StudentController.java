@@ -9,9 +9,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -138,18 +136,8 @@ public class StudentController {
 
   @PostMapping("/registerStudents")
 
-  //Thymeleafを使うときは確実に行うもの
-  //@ModelAttributeアノテーションを使って、フォームから送信されたStudentDetailのデータを受け取る
-  //BindingResultは、入力チェックの結果を受け取るためのもの
-  //入力チェックしたいものをBindingResultに入れて、エラーが発生したら、元の画面に戻す
-  //ユーザーがフォームに無効なデータを入力した場合（必須項目の未入力、形式エラーなど）を検出
-  //バリデーション機能を追加した際に機能するように準備
-  public String registerStudents(@ModelAttribute StudentDetail studentDetail,
-      BindingResult result) {
-    if (result.hasErrors()) {
-      return "registerStudent";
-    }
-
+  // ResponseEntityは、SpringBootでHTTPレスポンスを返すための特別なクラス
+  public ResponseEntity<String> registerStudents(@RequestBody StudentDetail studentDetail) {
     for (StudentCourse course : studentDetail.getStudentsCourses()) {
       if (course.getCourseStartDate() != null) {
         course.setCourseExpectedEndDate(course.getCourseStartDate().plusYears(1));
@@ -160,8 +148,8 @@ public class StudentController {
     //サービス層のregisterStudentメソッドを呼び出し、studentDetailから取り出した学生情報を登録する
     service.registerStudent(studentDetail);
 
-    //学生が登録された後、一覧画面（/students）にリダイレクトして確認できるようにするn
-    return "redirect:/students";
+    //学生が登録された後、一覧画面（/students）にリダイレクトして確認できるようにする
+    return ResponseEntity.ok("登録処理が成功しました！");
   }
 
   @GetMapping("/students/{studentId}")

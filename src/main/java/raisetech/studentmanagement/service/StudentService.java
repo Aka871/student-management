@@ -93,13 +93,20 @@ public class StudentService {
       // 目的：コースと受講生を関連付け、どの受講生がどのコースを受講しているかを管理
       studentCourse.setStudentId(studentUuid);
 
+      if (studentCourse.getCourseStartDate() == null) {
+        studentCourse.setCourseStartDate(LocalDate.now());
+      }
+      if (studentCourse.getCourseExpectedEndDate() == null) {
+        studentCourse.setCourseExpectedEndDate(LocalDate.now().plusYears(1));
+      }
+
       // コース開始日を現在日付に設定
       // 目的：受講開始日を記録し、受講期間管理の基準とする
-      studentCourse.setCourseStartDate(LocalDate.now());
+      //studentCourse.setCourseStartDate(LocalDate.now());
 
       // コース終了予定日を1年後に設定
       // 目的：標準的な受講期間として1年を設定し、期間管理を可能にする
-      studentCourse.setCourseExpectedEndDate(LocalDate.now().plusYears(1));
+      //studentCourse.setCourseExpectedEndDate(LocalDate.now().plusYears(1));
 
       // コース情報をデータベースのstudents_coursesテーブルに保存
       // 目的：受講コース情報を永続化し、後から検索・参照できるようにする
