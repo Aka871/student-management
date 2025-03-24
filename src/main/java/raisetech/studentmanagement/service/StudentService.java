@@ -121,13 +121,18 @@ public class StudentService {
     // 目的：画面から受け取った受講生基本情報を永続化する
     repository.updateStudent(studentDetail.getStudent());
 
+    String studentId = studentDetail.getStudent().getStudentId();
+
+    // 該当する受講生が受講している全コース情報を取得
+    List<StudentCourse> existingCourses = repository.findCourseById(studentId);
+
     // コース情報の更新。受講生に紐づく全てのコース情報を処理するループ
     // 目的：1人の受講生が複数のコースを受講できるようにする
     for (StudentCourse studentCourse : studentDetail.getStudentsCourses()) {
 
       // コース名からコースIDを取得(コースIDを明示的に設定)
-      String courseID = CourseType.fromCourseName(studentCourse.getCourseName()).getCourseId();
-      studentCourse.setCourseId(courseID);
+      String courseId = CourseType.fromCourseName(studentCourse.getCourseName()).getCourseId();
+      studentCourse.setCourseId(courseId);
 
       //フォームから送信された StudentCourse オブジェクトに日付情報がない場合でも、自動的に値が設定されるようになる
       if (studentCourse.getCourseStartDate() == null) {
@@ -137,14 +142,11 @@ public class StudentService {
         studentCourse.setCourseExpectedEndDate(LocalDate.now().plusYears(1));
       }
 
-      // レコードの存在確認
-      // 目的：該当するコースがDB上に存在するか確認し、適切な処理（更新または新規登録）を行う
-      List<StudentCourse> existingCourses = repository.findCourseById(studentCourse.getStudentId());
       boolean courseExists = false;
 
       // 該当する受講生が受講している全コースから、更新対象のコースIDと一致するものを探す
       for (StudentCourse existing : existingCourses) {
-        if (existing.getCourseId().equals(courseID)) {
+        if (existing.getCourseId().equals(courseId)) {
           courseExists = true;
           break;
         }
