@@ -93,13 +93,12 @@ public class StudentService {
       // 目的：コースと受講生を関連付け、どの受講生がどのコースを受講しているかを管理
       studentCourse.setStudentId(studentUuid);
 
-      // コース開始日を現在日付に設定
-      // 目的：受講開始日を記録し、受講期間管理の基準とする
-      studentCourse.setCourseStartDate(LocalDate.now());
-
-      // コース終了予定日を1年後に設定
-      // 目的：標準的な受講期間として1年を設定し、期間管理を可能にする
-      studentCourse.setCourseExpectedEndDate(LocalDate.now().plusYears(1));
+      if (studentCourse.getCourseStartDate() == null) {
+        studentCourse.setCourseStartDate(LocalDate.now());
+      }
+      if (studentCourse.getCourseExpectedEndDate() == null) {
+        studentCourse.setCourseExpectedEndDate(LocalDate.now().plusYears(1));
+      }
 
       // コース情報をデータベースのstudents_coursesテーブルに保存
       // 目的：受講コース情報を永続化し、後から検索・参照できるようにする
@@ -122,9 +121,18 @@ public class StudentService {
     // 目的：画面から受け取った受講生基本情報を永続化する
     repository.updateStudent(studentDetail.getStudent());
 
+    String studentId = studentDetail.getStudent().getStudentId();
+
+    // 該当する受講生が受講している全コース情報を取得
+    List<StudentCourse> existingCourses = repository.findCourseById(studentId);
+
     // コース情報の更新。受講生に紐づく全てのコース情報を処理するループ
     // 目的：1人の受講生が複数のコースを受講できるようにする
     for (StudentCourse studentCourse : studentDetail.getStudentsCourses()) {
+
+      // コース名からコースIDを取得(コースIDを明示的に設定)
+      String courseId = CourseType.fromCourseName(studentCourse.getCourseName()).getCourseId();
+      studentCourse.setCourseId(courseId);
 
       //フォームから送信された StudentCourse オブジェクトに日付情報がない場合でも、自動的に値が設定されるようになる
       if (studentCourse.getCourseStartDate() == null) {
@@ -134,13 +142,29 @@ public class StudentService {
         studentCourse.setCourseExpectedEndDate(LocalDate.now().plusYears(1));
       }
 
-      // コース情報をデータベースのstudents_coursesテーブルに保存
-      // 目的：受講コース情報を永続化し、後から検索・参照できるようにする
-      repository.updateStudentCourse(studentCourse);
+      boolean courseExists = false;
+
+      // 該当する受講生が受講している全コースから、更新対象のコースIDと一致するものを探す
+      for (StudentCourse existing : existingCourses) {
+        if (existing.getCourseId().equals(courseId)) {
+          courseExists = true;
+          break;
+        }
+      }
+
+      // 該当コースが存在する場合は更新、存在しない場合は新規登録を行う
+      // 目的：APIからの更新リクエストを柔軟に処理し、データの整合性を保つ
+      if (courseExists) {
+        // 既存のコースを更新
+        repository.updateStudentCourse(studentCourse);
+      } else {
+        // 新規コースとして登録
+        repository.saveStudentCourse(studentCourse);
+      }
     }
   }
 
-  // 特定のIDを持つ学生の詳細情報を取得するメソッド
+  // 特定のIDを持つ受講生の詳細情報を取得するメソッド
   public StudentDetail getStudentDetailById(String studentId) {
 
     // 特定のIDを持つ受講生情報を取得

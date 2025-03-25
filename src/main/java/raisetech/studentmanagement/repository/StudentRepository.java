@@ -68,7 +68,9 @@ public interface StudentRepository {
           + " municipality_name = #{municipalityName}, age = #{age}, sex = #{sex}, occupation = #{occupation}, remark = #{remark}, isDeleted = #{deleted} WHERE student_id = #{studentId}")
   void updateStudent(Student student);
 
+  // 特定の受講生の特定のコースだけを更新したい場合、WHERE句には、studentIdとcourseIdの両方を指定する必要がある
   @Update(
-      "UPDATE students_courses SET course_name = #{courseName}, course_start_date = #{courseStartDate}, course_expected_end_date = #{courseExpectedEndDate} WHERE course_id = #{courseId}")
+      "UPDATE students_courses SET course_name = #{courseName}, course_start_date = #{courseStartDate}, course_expected_end_date = #{courseExpectedEndDate} "
+          + "WHERE student_id = #{studentId} AND course_id = #{courseId}")
   void updateStudentCourse(StudentCourse studentCourse);
 }
