@@ -8,6 +8,9 @@ import org.apache.ibatis.annotations.Update;
 import raisetech.studentmanagement.data.Student;
 import raisetech.studentmanagement.data.StudentCourse;
 
+/**
+ * 受講生テーブル、受講生コース情報テーブルと紐づくRepositoryです。
+ */
 //@Mapperアノテーションは、MyBatisにこのインターフェースがデータベースの操作を行うためのものだと伝える
 @Mapper
 
@@ -17,6 +20,11 @@ import raisetech.studentmanagement.data.StudentCourse;
 //MyBatisによりデータベースと直接やり取りを行い、学生情報の検索（searchStudents）や学生情報の登録（saveStudent）などを行う
 public interface StudentRepository {
 
+  /**
+   * 受講生情報の全件検索を行います。
+   *
+   * @return 受講生情報一覧(全件)
+   */
   //@Selectアノテーションは、このメソッドがSQLのSELECT文を実行することを指定
   //"SELECT * FROM students" は、students テーブルからすべての列と行を取得するSQLクエリ
   //引数なしで呼び出され、すべての学生データをStudentオブジェクトのリストとして返す
@@ -24,9 +32,17 @@ public interface StudentRepository {
   @Select("SELECT *, isDeleted AS deleted FROM students")
   List<Student> searchStudents();
 
+  // TODO:要確認(削除できるか)
   @Select("SELECT * FROM students_courses")
   List<StudentCourse> searchCourses();
-
+  
+  /**
+   * 受講生検索を行います。
+   * 受講生IDに紐づく任意の受講生の情報を取得します。
+   *
+   * @param studentId 受講生ID
+   * @return 受講生IDに紐づく受講生情報
+   */
   // 受講生のIDを指定して、1人の学生データを取得
   // students テーブルから、student_id が指定された値と一致するレコードを取得する
   // #{studentId} の部分は、メソッドの引数 studentId の値が埋め込まれる
@@ -34,10 +50,22 @@ public interface StudentRepository {
   @Select("SELECT *, isDeleted AS deleted FROM students WHERE student_id = #{studentId}")
   Student findById(String studentId);
 
+  /**
+   * 受講生検索を行います。
+   * 受講生IDに紐づく任意の受講生のコース情報を取得します。
+   *
+   * @param studentId 受講生ID
+   * @return 受講生IDに紐づく受講生情報
+   */
   // 受講生のIDを指定して、すべてのコース情報を取得
   @Select("SELECT * FROM students_courses WHERE student_id = #{studentId}")
   List<StudentCourse> findCourseById(String studentId);
 
+  /**
+   * 受講生テーブルに新規登録を行います。
+   *
+   * @param student 受講生情報
+   */
   // @Insertアノテーションは、このメソッドがSQLのINSERT文を実行することを指定
   // 目的：Javaオブジェクトの値をSQL文に埋め込んでデータベースに保存する
   @Insert(
@@ -53,21 +81,37 @@ public interface StudentRepository {
   //saveStudentメソッドが呼ばれると、データベースに新しいStudentデータを挿入する
   void saveStudent(Student student);
 
+  /**
+   * 受講生コース情報テーブルに新規登録を行います。
+   *
+   * @param studentCourse 受講生コース情報
+   */
+
   @Insert(
       // 保存先のテーブルとカラムを指定し、各パラメータを対応する場所に埋め込む
       // 目的：StudentCourseオブジェクトの各フィールドをデータベースの適切なカラムに対応させる
       "INSERT INTO students_courses(course_id, student_id, course_name, course_start_date, course_expected_end_date)"
           + "VALUES (#{courseId}, #{studentId}, #{courseName}, #{courseStartDate}, #{courseExpectedEndDate})")
 
-    // コース情報保存用メソッドのインターフェース宣言
-    // 目的：MyBatisがこのメソッド呼び出しを上記のSQL実行に変換する
+  // コース情報保存用メソッドのインターフェース宣言
+  // 目的：MyBatisがこのメソッド呼び出しを上記のSQL実行に変換する
   void saveStudentCourse(StudentCourse studentCourse);
 
+  /**
+   * 受講生情報テーブルに更新処理を行います。
+   *
+   * @param student 受講生情報
+   */
   @Update(
       "UPDATE students SET full_name = #{fullName}, furigana_name = #{furiganaName}, nick_name = #{nickName}, phone_number = #{phoneNumber}, mail_address = #{mailAddress},"
           + " municipality_name = #{municipalityName}, age = #{age}, sex = #{sex}, occupation = #{occupation}, remark = #{remark}, isDeleted = #{deleted} WHERE student_id = #{studentId}")
   void updateStudent(Student student);
 
+  /**
+   * 受講生コース情報テーブルに更新処理を行います。
+   *
+   * @param studentCourse 受講生コース情報
+   */
   // 特定の受講生の特定のコースだけを更新したい場合、WHERE句には、studentIdとcourseIdの両方を指定する必要がある
   @Update(
       "UPDATE students_courses SET course_name = #{courseName}, course_start_date = #{courseStartDate}, course_expected_end_date = #{courseExpectedEndDate} "

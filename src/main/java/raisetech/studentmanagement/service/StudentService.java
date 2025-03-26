@@ -14,6 +14,9 @@ import raisetech.studentmanagement.domain.StudentDetail;
 import raisetech.studentmanagement.exception.StudentNotFoundException;
 import raisetech.studentmanagement.repository.StudentRepository;
 
+/**
+ * 受講生情報を取り扱うサービスです。 受講生の検索や登録・更新処理を行います。
+ */
 //ビジネスロジックを記述するクラスには@Serviceアノテーションを付与。そのクラスはBean化され、内部メモリ上に格納される
 //Bean化とは、そのクラスがSpringの管理下に置かれ、インスタンス（オブジェクト）がSpringフレームワークによって生成・管理されることを意味する
 //結果、@Autowiredアノテーションを使用することで、依存性注入（DI）が可能となり、
@@ -31,6 +34,8 @@ public class StudentService {
     this.repository = repository;
   }
 
+  //TODO:要確認(削除できるか)
+
   // 受講生検索メソッド (全受講生を取得し、年齢でフィルタリング)
   public List<Student> getStudents(Integer minAge, Integer maxAge) {
     List<Student> allStudents = repository.searchStudents();
@@ -42,6 +47,8 @@ public class StudentService {
         //条件に合致した生徒情報をリストに格納
         .collect(Collectors.toList());
   }
+
+  //TODO:要確認(削除できるか)
 
   // コース検索メソッド (全コースを取得し、コース名でフィルタリング。大文字と小文字の区別なし)
   public List<StudentCourse> getCourses(String courseName) {
@@ -60,6 +67,12 @@ public class StudentService {
     return allCourses;
   }
 
+  /**
+   * 受講生情報を新規登録します。
+   * UUIDを受講生IDとして付与し、コース情報と関連付けてデータベースに保存します。
+   *
+   * @param studentDetail 登録対象の受講生詳細情報 (受講生情報とコース情報)
+   */
   // Serviceクラスの登録、更新、削除という一連のデータベースに変更を加えるメソッドには、必ず@Transactionalをつける
   // 関連する処理をひとまとまりとして扱い、途中でエラーが発生した場合、すべての変更を取り消す
   @Transactional
@@ -114,6 +127,14 @@ public class StudentService {
     return CourseType.fromCourseName(courseName).getCourseId();
   }
 
+  /**
+   * 受講生情報を更新します。
+   * 受講生IDに紐づいている受講生の情報を取得し、該当する更新対象のコースIDと一致するものを探します。
+   * 該当コースが存在する場合は更新、存在しない場合は新規登録を行います。
+   *
+   * @param studentDetail 更新対象の受講生詳細情報 (受講生情報とコース情報)
+   */
+
   @Transactional
   public void updateStudentDetail(StudentDetail studentDetail) {
 
@@ -164,7 +185,14 @@ public class StudentService {
     }
   }
 
-  // 特定のIDを持つ受講生の詳細情報を取得するメソッド
+  /**
+   * 受講生(個別)の詳細情報を取得します。
+   * 対象は、指定した受講生IDに紐づく、受講生の詳細情報です。
+   *
+   * @param studentId 受講生ID
+   * @return 指定したIDの受講生の詳細情報（受講生情報とコース情報を結合したもの）
+   * @throws StudentNotFoundException 指定されたIDの受講生が存在しない場合にスロー
+   */
   public StudentDetail getStudentDetailById(String studentId) {
 
     // 特定のIDを持つ受講生情報を取得
@@ -189,7 +217,12 @@ public class StudentService {
     return studentDetail;
   }
 
-  // 削除登録されていない受講生のみを受講生一覧に表示する
+  /**
+   * 受講生情報の一覧を取得します。
+   * 対象は、論理削除されていない受講生のみです。
+   *
+   * @return 論理削除されていない受講生情報のリスト
+   */
   public List<Student> getNotDeletedStudents() {
     List<Student> allStudents = repository.searchStudents();
     return allStudents.stream()

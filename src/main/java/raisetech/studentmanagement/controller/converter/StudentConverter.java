@@ -8,12 +8,23 @@ import raisetech.studentmanagement.data.Student;
 import raisetech.studentmanagement.data.StudentCourse;
 import raisetech.studentmanagement.domain.StudentDetail;
 
+/**
+ * Serviceから取得したオブジェクトをControllerにとって必要な形に変換するコンバーターです。
+ */
 //Componentアノテーションを付与すると、そのクラスはBean化されて、内部メモリに格納される
 //Bean化されたクラスは、他のクラスから@Autowiredアノテーションを使って自動的に取得できるようになる
 @Component
 public class StudentConverter {
 
-  //StudentリストとStudentCourseリストをを結合して、StudentDetailクラスのリストを作成するメソッド
+  /**
+   * 受講生情報とコース情報を結合し、受講生詳細情報のリストを生成します。
+   * 受講生に対して複数のコース情報が紐づくため、受講生ごとにループ処理を行い、
+   * 対応するコース情報をマッピングして受講生詳細情報を組み立てます。
+   *
+   * @param students       受講生情報のリスト
+   * @param studentCourses 受講生コース情報のリスト
+   * @return 受講生詳細情報のリスト（受講生情報とコース情報を結合したもの）
+   */
   public List<StudentDetail> convertStudentDetails(List<Student> students,
       List<StudentCourse> studentCourses) {
 

@@ -17,13 +17,16 @@ import raisetech.studentmanagement.data.StudentCourse;
 import raisetech.studentmanagement.domain.StudentDetail;
 import raisetech.studentmanagement.service.StudentService;
 
+/**
+ * 受講生の検索や登録、更新などを行うREST APIとして受け付けるControllerです。
+ * 各エンドポイントはJSON形式でレスポンスを返します。
+ */
 // @RestControllerを付けることで、このクラスがREST APIのコントローラーであることを示す
 // クライアント(Postmanなど)からのリクエストに対して、JSON形式のレスポンスを返す
 // @Controller + @ResponseBodyの組み合わせと同じ機能を持つ
 @RestController
 public class StudentController {
 
-  //クラス内で使う変数(フィールド)を定義
   //コンストラクタインジェクション
   //依存関係をコンストラクタで明示でき、よりテストがしやすい
   //finalを付けることができるので、インスタンスが生成された後に このフィールドが変更されないことを保証できる
@@ -31,6 +34,12 @@ public class StudentController {
   private final StudentService service;
   private final StudentConverter converter;
 
+  /**
+   * コンストラクタ
+   *
+   * @param service   受講生サービス
+   * @param converter 受講生コンバーター
+   */
   //@Autowiredアノテーションを使用することで、依存性を注入
   //StudentServiceとStudentConverterのインスタンスをSpringが自動的にStudentControllerに渡してくれている
   //このコンストラクタが呼ばれると、serviceとconverterフィールド(クラスブロック内の直下で作った変数)に
@@ -46,7 +55,12 @@ public class StudentController {
     this.converter = converter;
   }
 
-  //URLパス"/students"にアクセスした際に、このメソッドが呼び出される
+  /**
+   * 受講生の詳細情報一覧を取得します。
+   * 対象は、論理削除されていない受講生のみです。
+   *
+   * @return 論理削除されていない受講生の詳細情報のリスト（受講生情報とコース情報を結合したもの）
+   */
   @GetMapping("/students")
   public List<StudentDetail> getStudents() {
 
@@ -61,55 +75,13 @@ public class StudentController {
     return converter.convertStudentDetails(students, studentsCourses);
   }
 
-  @GetMapping("/courses")
-  //戻り値をHTTPレスポンスボディとして返す（JavaオブジェクトからJSONに自動変換）
-  @ResponseBody
-
-  //StudentCourseというクラスのオブジェクトを複数の要素として持つリストを返す
-  public List<StudentCourse> getCourses(
-
-      //メソッドの引数courseNameは、クエリパラメータ（URLの?courseName=value部分）を受け取る
-      //@RequestParam(required = false)により、courseNameは省略可能（値が渡されなくても動作する)
-      @RequestParam(required = false) String courseName) {
-    return service.getCourses(courseName);
-  }
-
-  @GetMapping("/students/details")
-
-  //@ResponseBodyアノテーションを付与することで、このメソッドが返す値がJSON形式で返されるようになる
-  //@RestController をクラスに付けると、全メソッドがデフォルトでデータ（JSONやXML）を返す設定になり、HTMLのテンプレートを使用する場合にエラーが発生する
-  //HTMLテンプレートを返すメソッドとデータだけを返すメソッドが混在している場合、
-  //@ResponseBodyアノテーションを付けることで、データだけを返すメソッドであることを示す
-  @ResponseBody
-  public List<StudentDetail> searchStudents() {
-
-    //すべての生徒情報とコース情報を取得(引数がnullのため)
-    //List<Student>の中には、Studentクラスのインスタンスが格納されている。変数名は任意で良い
-    List<Student> students = service.getStudents(null, null);
-    List<StudentCourse> studentCourses = service.getCourses(null);
-
-    //List<StudentDetail>型のconverter.convertStudentDetails()は、生徒情報とコース情報をもとに、StudentDetailクラスのリストを作成して返す
-    return converter.convertStudentDetails(students, studentCourses);
-  }
-  
-  @PostMapping("/registerStudents")
-
-  // ResponseEntityは、SpringBootでHTTPレスポンスを返すための特別なクラス
-  public ResponseEntity<String> registerStudents(@RequestBody StudentDetail studentDetail) {
-    for (StudentCourse course : studentDetail.getStudentsCourses()) {
-      if (course.getCourseStartDate() != null) {
-        course.setCourseExpectedEndDate(course.getCourseStartDate().plusYears(1));
-      }
-    }
-
-    //新規受講生を登録する処理を実装する
-    //サービス層のregisterStudentメソッドを呼び出し、studentDetailから取り出した学生情報を登録する
-    service.registerStudent(studentDetail);
-
-    //学生が登録された後、一覧画面（/students）にリダイレクトして確認できるようにする
-    return ResponseEntity.ok("登録処理が成功しました！");
-  }
-
+  /**
+   * 受講生(個別)の詳細情報を取得します。
+   * 対象は、指定した受講生IDに紐づく、受講生の詳細情報です。
+   *
+   * @param studentId 受講生ID
+   * @return 指定したIDの受講生の詳細情報 (受講生情報とコース情報を結合したもの)
+   */
   @GetMapping("/students/{studentId}")
 
   public ResponseEntity<StudentDetail> getStudentById(@PathVariable String studentId) {
@@ -134,6 +106,68 @@ public class StudentController {
     return ResponseEntity.ok(studentDetail);
   }
 
+  // TODO:要確認(削除できるか)
+  @GetMapping("/courses")
+  //戻り値をHTTPレスポンスボディとして返す（JavaオブジェクトからJSONに自動変換）
+  @ResponseBody
+
+  //StudentCourseというクラスのオブジェクトを複数の要素として持つリストを返す
+  public List<StudentCourse> getCourses(
+
+      //メソッドの引数courseNameは、クエリパラメータ（URLの?courseName=value部分）を受け取る
+      //@RequestParam(required = false)により、courseNameは省略可能（値が渡されなくても動作する)
+      @RequestParam(required = false) String courseName) {
+    return service.getCourses(courseName);
+  }
+
+  // TODO:要確認(削除できるか)
+  @GetMapping("/students/details")
+
+  //@ResponseBodyアノテーションを付与することで、このメソッドが返す値がJSON形式で返されるようになる
+  //@RestController をクラスに付けると、全メソッドがデフォルトでデータ（JSONやXML）を返す設定になり、HTMLのテンプレートを使用する場合にエラーが発生する
+  //HTMLテンプレートを返すメソッドとデータだけを返すメソッドが混在している/students/details場合、
+  //@ResponseBodyアノテーションを付けることで、データだけを返すメソッドであることを示す
+  @ResponseBody
+  public List<StudentDetail> searchStudents() {
+
+    //すべての生徒情報とコース情報を取得(引数がnullのため)
+    //List<Student>の中には、Studentクラスのインスタンスが格納されている。変数名は任意で良い
+    List<Student> students = service.getStudents(null, null);
+    List<StudentCourse> studentCourses = service.getCourses(null);
+
+    //List<StudentDetail>型のconverter.convertStudentDetails()は、生徒情報とコース情報をもとに、StudentDetailクラスのリストを作成して返す
+    return converter.convertStudentDetails(students, studentCourses);
+  }
+
+  /**
+   * 新規で受講生情報を登録します。
+   *
+   * @param studentDetail 登録対象の受講生詳細情報 (受講生情報とコース情報)
+   * @return 登録処理の結果メッセージ
+   */
+  @PostMapping("/registerStudents")
+
+  // ResponseEntityは、SpringBootでHTTPレスポンスを返すための特別なクラス
+  public ResponseEntity<String> registerStudents(@RequestBody StudentDetail studentDetail) {
+    for (StudentCourse course : studentDetail.getStudentsCourses()) {
+      if (course.getCourseStartDate() != null) {
+        course.setCourseExpectedEndDate(course.getCourseStartDate().plusYears(1));
+      }
+    }
+
+    //サービス層のregisterStudentメソッドを呼び出し、studentDetailから取り出した学生情報を登録する
+    service.registerStudent(studentDetail);
+
+    //学生が登録された後、一覧画面（/students）にリダイレクトして確認できるようにする
+    return ResponseEntity.ok("登録処理が成功しました！");
+  }
+
+  /**
+   * 受講生情報を更新します。
+   *
+   * @param studentDetail 更新対象の受講生詳細情報 (受講生情報とコース情報)
+   * @return 更新処理の結果メッセージ
+   */
   @PostMapping("/updateStudents")
   // ResponseEntityは、SpringBootでHTTPレスポンスを返すための特別なクラス
   // ResponseEntity<String> を使用して、更新結果のメッセージをHTTPレスポンスとして返す
@@ -144,7 +178,7 @@ public class StudentController {
         course.setCourseExpectedEndDate(course.getCourseStartDate().plusYears(1));
       }
     }
-    //新規受講生を登録する処理を実装する
+
     //サービス層のregisterStudentメソッドを呼び出し、studentDetailから取り出した学生情報を登録する
     service.updateStudentDetail(studentDetail);
     return ResponseEntity.ok("更新処理が成功しました！");
