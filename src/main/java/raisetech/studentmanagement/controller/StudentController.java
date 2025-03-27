@@ -1,6 +1,5 @@
 package raisetech.studentmanagement.controller;
 
-import java.time.LocalDate;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -76,23 +75,7 @@ public class StudentController {
   @GetMapping("/students/{studentId}")
 
   public ResponseEntity<StudentDetail> getStudentById(@PathVariable String studentId) {
-
-    // Serviceクラスのメソッドを呼び出して既存データを取得
     StudentDetail studentDetail = service.getStudentDetailById(studentId);
-
-    // 取得した各コースの日付情報をチェックし、nullの場合はデフォルト値を設定
-    // studentDetailから受講コース情報のリスト(studentsCourses)を取得し、各コース情報を1つずつcourse変数に入れて処理
-    // studentDetail：学生一人の情報 + その学生が受講している複数のコース情報
-    // course：コース1つ分の情報（StudentCourse型）
-    for (StudentCourse course : studentDetail.getStudentsCourses()) {
-      if (course.getCourseStartDate() == null) {
-        course.setCourseStartDate(LocalDate.now());
-      }
-      if (course.getCourseExpectedEndDate() == null) {
-        course.setCourseExpectedEndDate(LocalDate.now().plusYears(1));
-      }
-    }
-
     // StudentDetailオブジェクトをそのままJSON形式で返す
     return ResponseEntity.ok(studentDetail);
   }
@@ -111,7 +94,8 @@ public class StudentController {
     return service.getCourses(courseName);
   }
 
-  // TODO:要確認(削除できるか)
+  // TODO: 今後、削除するか要検討 (仕様が明確になった段階で、削除または機能追加)
+  //  現時点では未使用だが、論理削除済みの受講生を含む全件取得や、将来的な検索機能の土台として活用する可能性がある。
   @GetMapping("/students/details")
 
   //@ResponseBodyアノテーションを付与することで、このメソッドが返す値がJSON形式で返されるようになる

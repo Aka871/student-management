@@ -92,6 +92,18 @@ public class StudentService {
     studentDetail.setStudent(student);
     studentDetail.setStudentsCourses(courses);
 
+    // 取得した各コースの日付情報をチェックし、nullの場合はデフォルト値を設定
+    // studentDetailから受講コース情報のリスト(studentsCourses)を取得し、各コース情報を1つずつcourse変数に入れて処理
+    // studentDetail：学生一人の情報 + その学生が受講している複数のコース情報
+    // course：コース1つ分の情報（StudentCourse型）
+    for (StudentCourse course : studentDetail.getStudentsCourses()) {
+      if (course.getCourseStartDate() == null) {
+        course.setCourseStartDate(LocalDate.now());
+      }
+      if (course.getCourseExpectedEndDate() == null) {
+        course.setCourseExpectedEndDate(LocalDate.now().plusYears(1));
+      }
+    }
     return studentDetail;
   }
 
