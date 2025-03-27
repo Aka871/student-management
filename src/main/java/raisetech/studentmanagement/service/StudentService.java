@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import raisetech.studentmanagement.controller.converter.StudentConverter;
 import raisetech.studentmanagement.data.CourseType;
 import raisetech.studentmanagement.data.Student;
 import raisetech.studentmanagement.data.StudentCourse;
@@ -25,13 +26,73 @@ import raisetech.studentmanagement.repository.StudentRepository;
 public class StudentService {
 
   private final StudentRepository repository;
+  private final StudentConverter converter;
 
   //@Autowiredによって、SpringがStudentRepositoryのインスタンスを自動的に渡してくれる(依存性の注入)
   //このコンストラクタが呼ばれると、repositoryフィールドにStudentRepositoryのインスタンスが設定され、
   //StudentServiceクラスの中でrepositoryのインスタンスを使えるようになる
   @Autowired
-  public StudentService(StudentRepository repository) {
+  public StudentService(StudentRepository repository, StudentConverter converter) {
     this.repository = repository;
+    this.converter = converter;
+  }
+
+  /**
+   * 受講生情報の一覧を取得します。
+   * 対象は、論理削除されていない受講生のみです。
+   *
+   * @return 論理削除されていない受講生情報のリスト
+   */
+  // 受講生情報の一覧だけが必要な場合を想定して、残しておく
+  public List<Student> getNotDeletedStudents() {
+    List<Student> allStudents = repository.searchStudents();
+    return allStudents.stream()
+        .filter(student -> !student.isDeleted())
+        .collect(Collectors.toList());
+  }
+
+  /**
+   * 受講生の詳細情報の一覧を取得します。
+   * 対象は、論理削除されていない受講生のみです。
+   *
+   * @return 論理削除されていない受講生の詳細情報のリスト（受講生情報とコース情報を結合したもの）
+   */
+  public List<StudentDetail> getNotDeletedStudentsDetails() {
+    List<Student> students = getNotDeletedStudents();
+    List<StudentCourse> studentsCourses = getCourses(null);
+    return converter.convertStudentDetails(students, studentsCourses);
+  }
+
+  /**
+   * 受講生(個別)の詳細情報を取得します。
+   * 対象は、指定した受講生IDに紐づく、受講生の詳細情報です。
+   *
+   * @param studentId 受講生ID
+   * @return 指定したIDの受講生の詳細情報（受講生情報とコース情報を結合したもの）
+   * @throws StudentNotFoundException 指定されたIDの受講生が存在しない場合にスロー
+   */
+  public StudentDetail getStudentDetailById(String studentId) {
+
+    // 特定のIDを持つ受講生情報を取得
+    Student student = repository.findById(studentId);
+
+    // 該当する受講生が見つからない場合の処理
+    if (student == null) {
+      // StudentNotFoundExceptionをスローして処理を中断し、エラー処理に移る
+      throw new StudentNotFoundException(studentId);
+    }
+
+    // 受講生が受講しているコース情報を取得
+    List<StudentCourse> courses = repository.findCourseById(studentId);
+
+    // 受講生情報とコース情報を組み合わせてStudentDetailを作成
+    // データを格納するための「入れ物」が必要なので、インスタンスを作成する
+    // メソッドを使用し、何かデータが戻ってくるときはインスタンスを自分で作成する必要はない
+    StudentDetail studentDetail = new StudentDetail();
+    studentDetail.setStudent(student);
+    studentDetail.setStudentsCourses(courses);
+
+    return studentDetail;
   }
 
   //TODO:要確認(削除できるか)
@@ -47,8 +108,6 @@ public class StudentService {
         //条件に合致した生徒情報をリストに格納
         .collect(Collectors.toList());
   }
-
-  //TODO:要確認(削除できるか)
 
   // コース検索メソッド (全コースを取得し、コース名でフィルタリング。大文字と小文字の区別なし)
   public List<StudentCourse> getCourses(String courseName) {
@@ -183,50 +242,5 @@ public class StudentService {
         repository.saveStudentCourse(studentCourse);
       }
     }
-  }
-
-  /**
-   * 受講生(個別)の詳細情報を取得します。
-   * 対象は、指定した受講生IDに紐づく、受講生の詳細情報です。
-   *
-   * @param studentId 受講生ID
-   * @return 指定したIDの受講生の詳細情報（受講生情報とコース情報を結合したもの）
-   * @throws StudentNotFoundException 指定されたIDの受講生が存在しない場合にスロー
-   */
-  public StudentDetail getStudentDetailById(String studentId) {
-
-    // 特定のIDを持つ受講生情報を取得
-    Student student = repository.findById(studentId);
-
-    // 該当する受講生が見つからない場合の処理
-    if (student == null) {
-      // StudentNotFoundExceptionをスローして処理を中断し、エラー処理に移る
-      throw new StudentNotFoundException(studentId);
-    }
-
-    // 受講生が受講しているコース情報を取得
-    List<StudentCourse> courses = repository.findCourseById(studentId);
-
-    // 受講生情報とコース情報を組み合わせてStudentDetailを作成
-    // データを格納するための「入れ物」が必要なので、インスタンスを作成する
-    // メソッドを使用し、何かデータが戻ってくるときはインスタンスを自分で作成する必要はない
-    StudentDetail studentDetail = new StudentDetail();
-    studentDetail.setStudent(student);
-    studentDetail.setStudentsCourses(courses);
-
-    return studentDetail;
-  }
-
-  /**
-   * 受講生情報の一覧を取得します。
-   * 対象は、論理削除されていない受講生のみです。
-   *
-   * @return 論理削除されていない受講生情報のリスト
-   */
-  public List<Student> getNotDeletedStudents() {
-    List<Student> allStudents = repository.searchStudents();
-    return allStudents.stream()
-        .filter(student -> !student.isDeleted())
-        .collect(Collectors.toList());
   }
 }

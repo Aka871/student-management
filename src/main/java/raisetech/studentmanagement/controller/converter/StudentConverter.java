@@ -9,7 +9,8 @@ import raisetech.studentmanagement.data.StudentCourse;
 import raisetech.studentmanagement.domain.StudentDetail;
 
 /**
- * Serviceから取得したオブジェクトをControllerにとって必要な形に変換するコンバーターです。
+ * 受講生詳細を受講生や受講生コース情報、もしくはその逆の変換を行うコンバーターです。
+ * 現在は一方向（受講生/受講生コース → 詳細）のみですが、将来的に双方向対応も想定しています。
  */
 //Componentアノテーションを付与すると、そのクラスはBean化されて、内部メモリに格納される
 //Bean化されたクラスは、他のクラスから@Autowiredアノテーションを使って自動的に取得できるようになる

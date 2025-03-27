@@ -63,16 +63,7 @@ public class StudentController {
    */
   @GetMapping("/students")
   public List<StudentDetail> getStudents() {
-
-    //論理削除されていない生徒情報とコース情報を取得(引数がnullのため)
-    //List<Student>の中には、Studentクラスのインスタンスが格納されている。変数名は任意で良い
-    List<Student> students = service.getNotDeletedStudents();
-
-    // すべての受講コース情報を取得（フィルタなし）
-    List<StudentCourse> studentsCourses = service.getCourses(null);
-
-    // 生徒情報とコース情報を統合し、リストとして返す
-    return converter.convertStudentDetails(students, studentsCourses);
+    return service.getNotDeletedStudentsDetails();
   }
 
   /**
