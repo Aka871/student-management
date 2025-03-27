@@ -80,7 +80,7 @@ public class StudentController {
     return ResponseEntity.ok(studentDetail);
   }
 
-  // TODO:要確認(削除できるか)
+  // TODO: 将来的に /students/details を削除する際、一緒にこのメソッドも削除する予定
   @GetMapping("/courses")
   //戻り値をHTTPレスポンスボディとして返す（JavaオブジェクトからJSONに自動変換）
   @ResponseBody

@@ -107,7 +107,7 @@ public class StudentService {
     return studentDetail;
   }
 
-  //TODO:要確認(削除できるか)
+  // TODO: 将来的に /students/details を削除する際、一緒にこのメソッドも削除する予定
 
   // 受講生検索メソッド (全受講生を取得し、年齢でフィルタリング)
   public List<Student> getStudents(Integer minAge, Integer maxAge) {
@@ -121,6 +121,7 @@ public class StudentService {
         .collect(Collectors.toList());
   }
 
+  // TODO: 将来的に /students/details を削除する際、一緒にこのメソッドも削除する予定
   // コース検索メソッド (全コースを取得し、コース名でフィルタリング。大文字と小文字の区別なし)
   public List<StudentCourse> getCourses(String courseName) {
     List<StudentCourse> allCourses = repository.searchCourses();

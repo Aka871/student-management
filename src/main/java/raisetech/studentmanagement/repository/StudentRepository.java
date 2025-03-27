@@ -32,10 +32,10 @@ public interface StudentRepository {
   @Select("SELECT *, isDeleted AS deleted FROM students")
   List<Student> searchStudents();
 
-  // TODO:要確認(削除できるか)
+  // TODO: 将来的に /students/details を削除する際、一緒にこのメソッドも削除する予定
   @Select("SELECT * FROM students_courses")
   List<StudentCourse> searchCourses();
-  
+
   /**
    * 受講生検索を行います。
    * 受講生IDに紐づく任意の受講生の情報を取得します。
