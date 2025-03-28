@@ -85,12 +85,9 @@ public class StudentService {
     // 受講生が受講しているコース情報を取得
     List<StudentCourse> courses = repository.findCourseById(studentId);
 
-    // 受講生情報とコース情報を組み合わせてStudentDetailを作成
     // データを格納するための「入れ物」が必要なので、インスタンスを作成する
     // メソッドを使用し、何かデータが戻ってくるときはインスタンスを自分で作成する必要はない
-    StudentDetail studentDetail = new StudentDetail();
-    studentDetail.setStudent(student);
-    studentDetail.setStudentsCourses(courses);
+    StudentDetail studentDetail = new StudentDetail(student, courses);
 
     // 取得した各コースの日付情報をチェックし、nullの場合はデフォルト値を設定
     // studentDetailから受講コース情報のリスト(studentsCourses)を取得し、各コース情報を1つずつcourse変数に入れて処理
