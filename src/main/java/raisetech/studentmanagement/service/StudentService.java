@@ -52,10 +52,11 @@ public class StudentService {
   }
 
   /**
-   * 受講生の詳細情報の一覧を取得します。
+   * 受講生詳細情報の一覧を取得します。
+   * 受講生情報と受講生コース情報を合わせたものを取得します。
    * 対象は、論理削除されていない受講生のみです。
    *
-   * @return 論理削除されていない受講生の詳細情報のリスト（受講生情報とコース情報を結合したもの）
+   * @return 論理削除されていない受講生詳細情報のリスト（受講生情報と受講生コース情報を結合したもの）
    */
   public List<StudentDetail> getNotDeletedStudentsDetails() {
     List<Student> students = getNotDeletedStudents();
@@ -64,12 +65,13 @@ public class StudentService {
   }
 
   /**
-   * 受講生(個別)の詳細情報を取得します。
-   * 対象は、指定した受講生IDに紐づく、受講生の詳細情報です。
+   * 受講生詳細情報(個別)を取得します。
+   * 受講生情報と受講生コース情報を合わせたものを取得します。
+   * 対象は、指定した受講生IDに紐づく、受講生詳細情報です。
    *
    * @param studentId 受講生ID
-   * @return 指定したIDの受講生の詳細情報（受講生情報とコース情報を結合したもの）
-   * @throws StudentNotFoundException 指定されたIDの受講生が存在しない場合にスロー
+   * @return 指定したIDの受講生詳細情報（受講生情報と受講生コース情報を結合したもの）
+   * @throws StudentNotFoundException 指定したIDの受講生が存在しない場合にスロー
    */
   public StudentDetail getStudentDetailById(String studentId) {
 
@@ -140,10 +142,11 @@ public class StudentService {
   }
 
   /**
-   * 受講生情報を新規登録します。
+   * 受講生詳細情報を新規登録します。
+   * 受講生情報と受講生コース情報をそれぞれ登録します。
    * UUIDを受講生IDとして付与し、コース情報と関連付けてデータベースに保存します。
    *
-   * @param studentDetail 登録対象の受講生詳細情報 (受講生情報とコース情報)
+   * @param studentDetail 登録対象の受講生詳細情報 (受講生情報と受講生コース情報)
    */
   // Serviceクラスの登録、更新、削除という一連のデータベースに変更を加えるメソッドには、必ず@Transactionalをつける
   // 関連する処理をひとまとまりとして扱い、途中でエラーが発生した場合、すべての変更を取り消す
@@ -200,11 +203,13 @@ public class StudentService {
   }
 
   /**
-   * 受講生情報を更新します。
+   * 受講生詳細情報を更新します。
+   * 受講生情報と受講生コース情報をそれぞれ更新します。
+   * キャンセルフラグの更新もここで行います。(論理削除)
    * 受講生IDに紐づいている受講生の情報を取得し、該当する更新対象のコースIDと一致するものを探します。
    * 該当コースが存在する場合は更新、存在しない場合は新規登録を行います。
    *
-   * @param studentDetail 更新対象の受講生詳細情報 (受講生情報とコース情報)
+   * @param studentDetail 更新対象の受講生詳細情報 (受講生情報と受講生コース情報)
    */
 
   @Transactional

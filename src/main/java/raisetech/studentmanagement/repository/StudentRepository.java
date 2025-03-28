@@ -37,8 +37,8 @@ public interface StudentRepository {
   List<StudentCourse> searchCourses();
 
   /**
-   * 受講生検索を行います。
-   * 受講生IDに紐づく任意の受講生の情報を取得します。
+   * 受講生情報の検索を行います。
+   * 受講生IDに紐づく任意の受講生情報を取得します。
    *
    * @param studentId 受講生ID
    * @return 受講生IDに紐づく受講生情報
@@ -51,18 +51,19 @@ public interface StudentRepository {
   Student findById(String studentId);
 
   /**
-   * 受講生検索を行います。
-   * 受講生IDに紐づく任意の受講生のコース情報を取得します。
+   * 受講生コース情報の検索を行います。
+   * 受講生IDに紐づく任意の受講生コース情報を取得します。
    *
    * @param studentId 受講生ID
-   * @return 受講生IDに紐づく受講生情報
+   * @return 受講生IDに紐づく受講生コース情報
    */
   // 受講生のIDを指定して、すべてのコース情報を取得
   @Select("SELECT * FROM students_courses WHERE student_id = #{studentId}")
   List<StudentCourse> findCourseById(String studentId);
 
   /**
-   * 受講生テーブルに新規登録を行います。
+   * 受講生情報を新規登録します。(受講生情報テーブル)
+   * 受講生IDはUUIDで設定します。
    *
    * @param student 受講生情報
    */
@@ -82,7 +83,8 @@ public interface StudentRepository {
   void saveStudent(Student student);
 
   /**
-   * 受講生コース情報テーブルに新規登録を行います。
+   * 受講生コース情報を新規登録します。(受講生コース情報テーブル)
+   * 受講生IDはUUIDで設定します。
    *
    * @param studentCourse 受講生コース情報
    */
@@ -98,7 +100,7 @@ public interface StudentRepository {
   void saveStudentCourse(StudentCourse studentCourse);
 
   /**
-   * 受講生情報テーブルに更新処理を行います。
+   * 受講生情報を更新します。(受講生情報テーブル)
    *
    * @param student 受講生情報
    */
@@ -108,7 +110,7 @@ public interface StudentRepository {
   void updateStudent(Student student);
 
   /**
-   * 受講生コース情報テーブルに更新処理を行います。
+   * 受講生コース情報を更新します。(受講生コース情報テーブル)
    *
    * @param studentCourse 受講生コース情報
    */

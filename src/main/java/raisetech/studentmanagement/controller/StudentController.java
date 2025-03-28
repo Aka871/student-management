@@ -55,10 +55,11 @@ public class StudentController {
   }
 
   /**
-   * 受講生の詳細情報一覧を取得します。
+   * 受講生詳細情報一覧を取得します。
+   * 受講生情報と受講生コース情報を合わせたものを取得します。
    * 対象は、論理削除されていない受講生のみです。
    *
-   * @return 論理削除されていない受講生の詳細情報のリスト（受講生情報とコース情報を結合したもの）
+   * @return 論理削除されていない受講生詳細情報のリスト（受講生情報と受講生コース情報を結合したもの）
    */
   @GetMapping("/students")
   public List<StudentDetail> getStudents() {
@@ -66,11 +67,12 @@ public class StudentController {
   }
 
   /**
-   * 受講生(個別)の詳細情報を取得します。
-   * 対象は、指定した受講生IDに紐づく、受講生の詳細情報です。
+   * 受講生詳細情報(個別)を取得します。
+   * 受講生情報と受講生コース情報を合わせたものを取得します。
+   * 対象は、指定した受講生IDに紐づく、受講生詳細情報です。
    *
    * @param studentId 受講生ID
-   * @return 指定したIDの受講生の詳細情報 (受講生情報とコース情報を結合したもの)
+   * @return 指定したIDの受講生詳細情報 (受講生情報と受講生コース情報を結合したもの)
    */
   @GetMapping("/students/{studentId}")
 
@@ -115,9 +117,10 @@ public class StudentController {
   }
 
   /**
-   * 新規で受講生情報を登録します。
+   * 新規で受講生詳細情報を登録します。
+   * 受講生情報と受講生コース情報をそれぞれ登録します。
    *
-   * @param studentDetail 登録対象の受講生詳細情報 (受講生情報とコース情報)
+   * @param studentDetail 登録対象の受講生詳細情報 (受講生情報と受講生コース情報)
    * @return 登録処理の結果メッセージ
    */
   @PostMapping("/registerStudents")
@@ -138,9 +141,11 @@ public class StudentController {
   }
 
   /**
-   * 受講生情報を更新します。
+   * 受講生詳細情報を更新します。
+   * 受講生情報と受講生コース情報をそれぞれ更新します。
+   * キャンセルフラグの更新もここで行います。(論理削除)
    *
-   * @param studentDetail 更新対象の受講生詳細情報 (受講生情報とコース情報)
+   * @param studentDetail 更新対象の受講生詳細情報 (受講生情報と受講生コース情報)
    * @return 更新処理の結果メッセージ
    */
   @PostMapping("/updateStudents")
