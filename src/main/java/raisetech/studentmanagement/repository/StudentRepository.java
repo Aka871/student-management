@@ -1,6 +1,7 @@
 package raisetech.studentmanagement.repository;
 
 import java.util.List;
+import java.util.Optional;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
@@ -39,16 +40,15 @@ public interface StudentRepository {
   /**
    * 受講生検索を行います。
    * 受講生IDに紐づく任意の受講生の情報を取得します。
+   * データが存在しない場合は、Optional.empty() が返されます。
    *
    * @param studentId 受講生ID
-   * @return 受講生IDに紐づく受講生情報
+   * @return 受講生IDに紐づく受講生情報 (存在しない場合は、Optional.empty ())
    */
-  // 受講生のIDを指定して、1人の学生データを取得
-  // students テーブルから、student_id が指定された値と一致するレコードを取得する
-  // #{studentId} の部分は、メソッドの引数 studentId の値が埋め込まれる
   // MyBatisのSQLにカラム名エイリアス(isDeleted AS deleted)を追加。DBのカラム名isDeletedとJavaフィールド名deletedを紐付け
+  // Optionalを返すことで、Service層でのnullチェックが不要になり、例外処理を明確に記述できる
   @Select("SELECT *, isDeleted AS deleted FROM students WHERE student_id = #{studentId}")
-  Student findById(String studentId);
+  Optional<Student> findById(String studentId);
 
   /**
    * 受講生検索を行います。

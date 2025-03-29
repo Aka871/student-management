@@ -73,16 +73,10 @@ public class StudentService {
    */
   public StudentDetail getStudentDetailById(String studentId) {
 
-    // 特定のIDを持つ受講生情報を取得
-    Student student = repository.findById(studentId);
-
-    // 該当する受講生が見つからない場合の処理
-    if (student == null) {
-      // StudentNotFoundExceptionをスローして処理を中断し、エラー処理に移る
-      throw new StudentNotFoundException(studentId);
-    }
-
-    // 受講生が受講しているコース情報を取得
+    // Optionalを使うと、値があるかを明示的にチェックでき、nullによる予期せぬエラー（NullPointerException）を防げる
+    Student student = repository.findById(studentId)
+        .orElseThrow(() -> new StudentNotFoundException((studentId)));
+    
     List<StudentCourse> courses = repository.findCourseById(studentId);
 
     // データを格納するための「入れ物」が必要なので、インスタンスを作成する
