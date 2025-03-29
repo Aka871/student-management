@@ -18,4 +18,12 @@ public class StudentDetail {
 
   //生徒が受講している複数のコース情報をリストで保持
   private List<StudentCourse> studentsCourses;
+
+  public StudentDetail() {
+  }
+
+  public StudentDetail(Student student, List<StudentCourse> studentsCourses) {
+    this.student = student;
+    this.studentsCourses = studentsCourses;
+  }
 }
