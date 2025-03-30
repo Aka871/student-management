@@ -2,11 +2,13 @@ package raisetech.studentmanagement.service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import raisetech.studentmanagement.controller.converter.StudentConverter;
 import raisetech.studentmanagement.data.CourseType;
 import raisetech.studentmanagement.data.Student;
 import raisetech.studentmanagement.data.StudentCourse;
@@ -14,6 +16,9 @@ import raisetech.studentmanagement.domain.StudentDetail;
 import raisetech.studentmanagement.exception.StudentNotFoundException;
 import raisetech.studentmanagement.repository.StudentRepository;
 
+/**
+ * 受講生情報を取り扱うサービスです。 受講生の検索や登録・更新処理を行います。
+ */
 //ビジネスロジックを記述するクラスには@Serviceアノテーションを付与。そのクラスはBean化され、内部メモリ上に格納される
 //Bean化とは、そのクラスがSpringの管理下に置かれ、インスタンス（オブジェクト）がSpringフレームワークによって生成・管理されることを意味する
 //結果、@Autowiredアノテーションを使用することで、依存性注入（DI）が可能となり、
@@ -22,14 +27,80 @@ import raisetech.studentmanagement.repository.StudentRepository;
 public class StudentService {
 
   private final StudentRepository repository;
+  private final StudentConverter converter;
 
   //@Autowiredによって、SpringがStudentRepositoryのインスタンスを自動的に渡してくれる(依存性の注入)
   //このコンストラクタが呼ばれると、repositoryフィールドにStudentRepositoryのインスタンスが設定され、
   //StudentServiceクラスの中でrepositoryのインスタンスを使えるようになる
   @Autowired
-  public StudentService(StudentRepository repository) {
+  public StudentService(StudentRepository repository, StudentConverter converter) {
     this.repository = repository;
+    this.converter = converter;
   }
+
+  /**
+   * 受講生情報の一覧を取得します。
+   * 対象は、論理削除されていない受講生のみです。
+   *
+   * @return 論理削除されていない受講生情報のリスト
+   */
+  // 受講生情報の一覧だけが必要な場合を想定して、残しておく
+  public List<Student> getNotDeletedStudents() {
+    List<Student> allStudents = repository.searchStudents();
+    return allStudents.stream()
+        .filter(student -> !student.isDeleted())
+        .collect(Collectors.toList());
+  }
+
+  /**
+   * 受講生の詳細情報の一覧を取得します。
+   * 対象は、論理削除されていない受講生のみです。
+   *
+   * @return 論理削除されていない受講生の詳細情報のリスト（受講生情報とコース情報を結合したもの）
+   */
+  public List<StudentDetail> getNotDeletedStudentsDetails() {
+    List<Student> students = getNotDeletedStudents();
+    List<StudentCourse> studentsCourses = getCourses(null);
+    return converter.convertStudentDetails(students, studentsCourses);
+  }
+
+  /**
+   * 受講生(個別)の詳細情報を取得します。
+   * 対象は、指定した受講生IDに紐づく、受講生の詳細情報です。
+   *
+   * @param studentId 受講生ID
+   * @return 指定したIDの受講生の詳細情報（受講生情報とコース情報を結合したもの）
+   * @throws StudentNotFoundException 指定されたIDの受講生が存在しない場合にスロー
+   */
+  public StudentDetail getStudentDetailById(String studentId) {
+
+    // Optionalを使うと、値があるかを明示的にチェックでき、nullによる予期せぬエラー（NullPointerException）を防げる
+    Student student = repository.findById(studentId)
+        .orElseThrow(() -> new StudentNotFoundException((studentId)));
+
+    List<StudentCourse> courses = repository.findCourseById(studentId);
+
+    // データを格納するための「入れ物」が必要なので、インスタンスを作成する
+    // メソッドを使用し、何かデータが戻ってくるときはインスタンスを自分で作成する必要はない
+    StudentDetail studentDetail = new StudentDetail(student, courses);
+
+    // 取得した各コースの日付情報をチェックし、nullの場合はデフォルト値を設定
+    // studentDetailから受講コース情報のリスト(studentsCourses)を取得し、各コース情報を1つずつcourse変数に入れて処理
+    // studentDetail：学生一人の情報 + その学生が受講している複数のコース情報
+    // course：コース1つ分の情報（StudentCourse型）
+    // Objects.isNullでnullチェックを明示的に行い、安全かつ読みやすくする
+    for (StudentCourse course : studentDetail.getStudentsCourses()) {
+      if (Objects.isNull(course.getCourseStartDate())) {
+        course.setCourseStartDate(LocalDate.now());
+      }
+      if (Objects.isNull(course.getCourseExpectedEndDate())) {
+        course.setCourseExpectedEndDate(LocalDate.now().plusYears(1));
+      }
+    }
+    return studentDetail;
+  }
+
+  // TODO: 将来的に /students/details を削除する際、一緒にこのメソッドも削除する予定
 
   // 受講生検索メソッド (全受講生を取得し、年齢でフィルタリング)
   public List<Student> getStudents(Integer minAge, Integer maxAge) {
@@ -43,6 +114,7 @@ public class StudentService {
         .collect(Collectors.toList());
   }
 
+  // TODO: 将来的に /students/details を削除する際、一緒にこのメソッドも削除する予定
   // コース検索メソッド (全コースを取得し、コース名でフィルタリング。大文字と小文字の区別なし)
   public List<StudentCourse> getCourses(String courseName) {
     List<StudentCourse> allCourses = repository.searchCourses();
@@ -60,6 +132,12 @@ public class StudentService {
     return allCourses;
   }
 
+  /**
+   * 受講生情報を新規登録します。
+   * UUIDを受講生IDとして付与し、コース情報と関連付けてデータベースに保存します。
+   *
+   * @param studentDetail 登録対象の受講生詳細情報 (受講生情報とコース情報)
+   */
   // Serviceクラスの登録、更新、削除という一連のデータベースに変更を加えるメソッドには、必ず@Transactionalをつける
   // 関連する処理をひとまとまりとして扱い、途中でエラーが発生した場合、すべての変更を取り消す
   @Transactional
@@ -93,10 +171,10 @@ public class StudentService {
       // 目的：コースと受講生を関連付け、どの受講生がどのコースを受講しているかを管理
       studentCourse.setStudentId(studentUuid);
 
-      if (studentCourse.getCourseStartDate() == null) {
+      if (Objects.isNull(studentCourse.getCourseStartDate())) {
         studentCourse.setCourseStartDate(LocalDate.now());
       }
-      if (studentCourse.getCourseExpectedEndDate() == null) {
+      if (Objects.isNull(studentCourse.getCourseExpectedEndDate())) {
         studentCourse.setCourseExpectedEndDate(LocalDate.now().plusYears(1));
       }
 
@@ -113,6 +191,14 @@ public class StudentService {
     // さらにgetCourseIdメソッドで、その定数のコースIDを取得して返す
     return CourseType.fromCourseName(courseName).getCourseId();
   }
+
+  /**
+   * 受講生情報を更新します。
+   * 受講生IDに紐づいている受講生の情報を取得し、該当する更新対象のコースIDと一致するものを探します。
+   * 該当コースが存在する場合は更新、存在しない場合は新規登録を行います。
+   *
+   * @param studentDetail 更新対象の受講生詳細情報 (受講生情報とコース情報)
+   */
 
   @Transactional
   public void updateStudentDetail(StudentDetail studentDetail) {
@@ -135,10 +221,10 @@ public class StudentService {
       studentCourse.setCourseId(courseId);
 
       //フォームから送信された StudentCourse オブジェクトに日付情報がない場合でも、自動的に値が設定されるようになる
-      if (studentCourse.getCourseStartDate() == null) {
+      if (Objects.isNull(studentCourse.getCourseStartDate())) {
         studentCourse.setCourseStartDate(LocalDate.now());
       }
-      if (studentCourse.getCourseExpectedEndDate() == null) {
+      if (Objects.isNull(studentCourse.getCourseExpectedEndDate())) {
         studentCourse.setCourseExpectedEndDate(LocalDate.now().plusYears(1));
       }
 
@@ -162,38 +248,5 @@ public class StudentService {
         repository.saveStudentCourse(studentCourse);
       }
     }
-  }
-
-  // 特定のIDを持つ受講生の詳細情報を取得するメソッド
-  public StudentDetail getStudentDetailById(String studentId) {
-
-    // 特定のIDを持つ受講生情報を取得
-    Student student = repository.findById(studentId);
-
-    // 該当する受講生が見つからない場合の処理
-    if (student == null) {
-      // StudentNotFoundExceptionをスローして処理を中断し、エラー処理に移る
-      throw new StudentNotFoundException(studentId);
-    }
-
-    // 受講生が受講しているコース情報を取得
-    List<StudentCourse> courses = repository.findCourseById(studentId);
-
-    // 受講生情報とコース情報を組み合わせてStudentDetailを作成
-    // データを格納するための「入れ物」が必要なので、インスタンスを作成する
-    // メソッドを使用し、何かデータが戻ってくるときはインスタンスを自分で作成する必要はない
-    StudentDetail studentDetail = new StudentDetail();
-    studentDetail.setStudent(student);
-    studentDetail.setStudentsCourses(courses);
-
-    return studentDetail;
-  }
-
-  // 削除登録されていない受講生のみを受講生一覧に表示する
-  public List<Student> getNotDeletedStudents() {
-    List<Student> allStudents = repository.searchStudents();
-    return allStudents.stream()
-        .filter(student -> !student.isDeleted())
-        .collect(Collectors.toList());
   }
 }
