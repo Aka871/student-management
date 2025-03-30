@@ -2,6 +2,7 @@ package raisetech.studentmanagement.service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,34 +76,26 @@ public class StudentService {
    */
   public StudentDetail getStudentDetailById(String studentId) {
 
-    // 特定のIDを持つ受講生情報を取得
-    Student student = repository.findById(studentId);
+    // Optionalを使うと、値があるかを明示的にチェックでき、nullによる予期せぬエラー（NullPointerException）を防げる
+    Student student = repository.findById(studentId)
+        .orElseThrow(() -> new StudentNotFoundException((studentId)));
 
-    // 該当する受講生が見つからない場合の処理
-    if (student == null) {
-      // StudentNotFoundExceptionをスローして処理を中断し、エラー処理に移る
-      throw new StudentNotFoundException(studentId);
-    }
-
-    // 受講生が受講しているコース情報を取得
     List<StudentCourse> courses = repository.findCourseById(studentId);
 
-    // 受講生情報とコース情報を組み合わせてStudentDetailを作成
     // データを格納するための「入れ物」が必要なので、インスタンスを作成する
     // メソッドを使用し、何かデータが戻ってくるときはインスタンスを自分で作成する必要はない
-    StudentDetail studentDetail = new StudentDetail();
-    studentDetail.setStudent(student);
-    studentDetail.setStudentsCourses(courses);
+    StudentDetail studentDetail = new StudentDetail(student, courses);
 
     // 取得した各コースの日付情報をチェックし、nullの場合はデフォルト値を設定
     // studentDetailから受講コース情報のリスト(studentsCourses)を取得し、各コース情報を1つずつcourse変数に入れて処理
     // studentDetail：学生一人の情報 + その学生が受講している複数のコース情報
     // course：コース1つ分の情報（StudentCourse型）
+    // Objects.isNullでnullチェックを明示的に行い、安全かつ読みやすくする
     for (StudentCourse course : studentDetail.getStudentsCourses()) {
-      if (course.getCourseStartDate() == null) {
+      if (Objects.isNull(course.getCourseStartDate())) {
         course.setCourseStartDate(LocalDate.now());
       }
-      if (course.getCourseExpectedEndDate() == null) {
+      if (Objects.isNull(course.getCourseExpectedEndDate())) {
         course.setCourseExpectedEndDate(LocalDate.now().plusYears(1));
       }
     }
@@ -181,10 +174,10 @@ public class StudentService {
       // 目的：コースと受講生を関連付け、どの受講生がどのコースを受講しているかを管理
       studentCourse.setStudentId(studentUuid);
 
-      if (studentCourse.getCourseStartDate() == null) {
+      if (Objects.isNull(studentCourse.getCourseStartDate())) {
         studentCourse.setCourseStartDate(LocalDate.now());
       }
-      if (studentCourse.getCourseExpectedEndDate() == null) {
+      if (Objects.isNull(studentCourse.getCourseExpectedEndDate())) {
         studentCourse.setCourseExpectedEndDate(LocalDate.now().plusYears(1));
       }
 
@@ -233,10 +226,10 @@ public class StudentService {
       studentCourse.setCourseId(courseId);
 
       //フォームから送信された StudentCourse オブジェクトに日付情報がない場合でも、自動的に値が設定されるようになる
-      if (studentCourse.getCourseStartDate() == null) {
+      if (Objects.isNull(studentCourse.getCourseStartDate())) {
         studentCourse.setCourseStartDate(LocalDate.now());
       }
-      if (studentCourse.getCourseExpectedEndDate() == null) {
+      if (Objects.isNull(studentCourse.getCourseExpectedEndDate())) {
         studentCourse.setCourseExpectedEndDate(LocalDate.now().plusYears(1));
       }
 
