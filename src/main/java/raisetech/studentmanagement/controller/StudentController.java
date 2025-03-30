@@ -3,6 +3,7 @@ package raisetech.studentmanagement.controller;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,9 +21,12 @@ import raisetech.studentmanagement.service.StudentService;
  * 受講生の検索や登録、更新などを行うREST APIとして受け付けるControllerです。
  * 各エンドポイントはJSON形式でレスポンスを返します。
  */
+// @Validatedをつけることで、このクラス全体で入力チェック（バリデーション）を行うことを示す
 // @RestControllerを付けることで、このクラスがREST APIのコントローラーであることを示す
 // クライアント(Postmanなど)からのリクエストに対して、JSON形式のレスポンスを返す
 // @Controller + @ResponseBodyの組み合わせと同じ機能を持つ
+
+@Validated
 @RestController
 public class StudentController {
 
