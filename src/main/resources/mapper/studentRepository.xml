@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="raisetech.studentmanagement.repository.StudentRepository">
+
+  <!-- 受講生情報を全件取得します（論理削除済みも含む） -->
+  <select id="searchStudents" resultType="raisetech.studentmanagement.data.Student">
+    SELECT *, isDeleted AS deleted FROM students
+  </select>
+
+  <!-- 受講生IDで個別の受講生情報を取得します -->
+  <select id="findById" resultType="raisetech.studentmanagement.data.Student">
+    SELECT *, isDeleted AS deleted FROM students WHERE student_id = #{studentId}
+  </select>
+
+  <!-- 受講生IDに紐づく受講生コース情報を取得します -->
+  <select id="findCourseById" parameterType="raisetech.studentmanagement.data.StudentCourse">
+    SELECT * FROM students_courses WHERE student_id = #{studentId}
+  </select>
+
+  <!-- 受講生情報を新規登録します
+   student_idはUUID()で自動生成されるように設定
+   #{}の部分は、メソッド引数のStudentオブジェクトのフィールド値を対応する場所に埋め込むことを意味します
+   MySQLのstudentsテーブルの各列に、Studentオブジェクトの各フィールドの値を挿入しています
+   例えば、MySQLのstudentsテーブルのfull_nameというカラムに、Studentクラスで定義されている変数（フィールド）fullNameの値を挿入しています
+  -->
+  <insert id="saveStudent" parameterType="raisetech.studentmanagement.data.Student">
+    INSERT INTO students (student_id, full_name, furigana_name, nick_name, phone_number,
+    mail_address, municipality_name, age, sex, occupation, remark)"
+    + "VALUES (#{studentId}, #{fullName}, #{furiganaName}, #{nickName}, #{phoneNumber},
+    #{mailAddress}, #{municipalityName},"
+    + " #{age},#{sex}, #{occupation}, #{remark})
+  </insert>
+
+  <!-- 受講生コース情報を新規登録します -->
+  <insert id="saveStudentCourse" parameterType="raisetech.studentmanagement.data.StudentCourse">
+    INSERT INTO students_courses(course_id, student_id, course_name, course_start_date,
+    course_expected_end_date)"
+    + "VALUES (#{courseId}, #{studentId}, #{courseName}, #{courseStartDate},
+    #{courseExpectedEndDate})
+  </insert>
+
+  <!-- 受講生情報を更新します -->
+  <update id="updateStudent" parameterType="raisetech.studentmanagement.data.Student">
+    UPDATE students
+    SET
+    full_name = #{fullName},
+    furigana_name = #{furiganaName},
+    nick_name = #{nickName},
+    phone_number = #{phoneNumber},
+    mail_address = #{mailAddress},
+    municipality_name = #{municipalityName},
+    age = #{age},
+    sex = #{sex},
+    occupation = #{occupation},
+    remark = #{remark},
+    isDeleted = #{deleted}
+    WHERE student_id = #{studentId}
+  </update>
+
+  <!--
+   受講生コース情報を更新します。
+   特定の受講生（studentId）かつ特定のコース（courseId）に該当する受講生コース情報を更新します。
+   特定の受講生の特定のコースだけを更新したい場合、WHERE句には、studentIdとcourseIdの両方を指定する必要があります。
+  -->
+  <update id="updateStudentCourse" parameterType="raisetech.studentmanagement.data.StudentCourse">
+    UPDATE students_courses
+    SET
+    course_name = #{courseName},
+    course_start_date = #{courseStartDate},
+    course_expected_end_date = #{courseExpectedEndDate}
+    WHERE student_id = #{studentId}
+    AND course_id = #{courseId}
+  </update>
+
+  <!--
+  すべての受講生コース情報を取得します。
+  TODO: 将来的に /students/details を削除する際は、このSQLも削除する予定です。
+  -->
+  <select id="searchCourses" resultType="raisetech.studentmanagement.data.StudentCourse">
+    SELECT * FROM students_courses
+  </select>
+
+</mapper>
