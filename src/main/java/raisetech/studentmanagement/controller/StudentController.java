@@ -128,7 +128,7 @@ public class StudentController {
    * @param studentDetail 登録対象の受講生詳細情報 (受講生情報と受講生コース情報)
    * @return 登録処理の結果メッセージ
    */
-  @PostMapping("/registerStudents")
+  @PostMapping("/students")
 
   // ResponseEntityは、SpringBootでHTTPレスポンスを返すための特別なクラス
   public ResponseEntity<String> registerStudents(@RequestBody StudentDetail studentDetail) {
@@ -153,7 +153,7 @@ public class StudentController {
    * @param studentDetail 更新対象の受講生詳細情報 (受講生情報と受講生コース情報)
    * @return 更新処理の結果メッセージ
    */
-  @PutMapping("/updateStudents")
+  @PutMapping("/students")
   // ResponseEntityは、SpringBootでHTTPレスポンスを返すための特別なクラス
   // ResponseEntity<String> を使用して、更新結果のメッセージをHTTPレスポンスとして返す
   // @RequestBodyにより、リクエストのJSONデータをStudentDetail型のオブジェクトとして受け取る
