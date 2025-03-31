@@ -205,11 +205,15 @@ public class StudentService {
   @Transactional
   public void updateStudentDetail(StudentDetail studentDetail) {
 
+    String studentId = studentDetail.getStudent().getStudentId();
+
+    // 存在確認：見つからない場合は例外をスロー
+    repository.findById(studentId)
+        .orElseThrow(() -> new StudentNotFoundException(studentId));
+
     // 受講生更新メソッド。受講生情報をデータベースのstudentsテーブルに保存
     // 目的：画面から受け取った受講生基本情報を永続化する
     repository.updateStudent(studentDetail.getStudent());
-
-    String studentId = studentDetail.getStudent().getStudentId();
 
     // 該当する受講生が受講している全コース情報を取得
     List<StudentCourse> existingCourses = repository.findCourseById(studentId);
