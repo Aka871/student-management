@@ -37,7 +37,7 @@ public class StudentService {
    *
    * @return 論理削除されていない受講生情報のリスト
    */
-  // TODO:受講生情報の一覧だけが必要な場合を想定して、残しておく
+  // 受講生詳細情報の一覧を取得する際に使用しているメソッド
   public List<Student> getNotDeletedStudents() {
     List<Student> allStudents = repository.searchStudents();
 
@@ -87,17 +87,7 @@ public class StudentService {
     return studentDetail;
   }
 
-  // TODO: 将来的に /students/details を削除する際、一緒にこのメソッドも削除する予定
-  public List<Student> getStudents(Integer minAge, Integer maxAge) {
-    List<Student> allStudents = repository.searchStudents();
-    return allStudents.stream()
-
-        .filter(student -> (minAge == null || student.getAge() >= minAge)
-            && (maxAge == null || student.getAge() <= maxAge))
-        .collect(Collectors.toList());
-  }
-
-  // TODO: 将来的に /students/details を削除する際、一緒にこのメソッドも削除する予定
+  // 受講生詳細情報の一覧を取得する際に使用しているメソッド
   // コース検索メソッド (全コースを取得し、コース名でフィルタリング。大文字と小文字の区別なし)
   public List<StudentCourse> getCourses(String courseName) {
     List<StudentCourse> allCourses = repository.searchCourses();
@@ -213,5 +203,15 @@ public class StudentService {
     if (Objects.isNull(studentCourse.getCourseExpectedEndDate())) {
       studentCourse.setCourseExpectedEndDate(now.plusYears(1));
     }
+  }
+
+  // TODO: 将来的に /students/details を削除する際、一緒にこのメソッドも削除する予定
+  public List<Student> getStudents(Integer minAge, Integer maxAge) {
+    List<Student> allStudents = repository.searchStudents();
+    return allStudents.stream()
+
+        .filter(student -> (minAge == null || student.getAge() >= minAge)
+            && (maxAge == null || student.getAge() <= maxAge))
+        .collect(Collectors.toList());
   }
 }
