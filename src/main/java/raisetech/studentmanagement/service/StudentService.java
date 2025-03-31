@@ -91,14 +91,14 @@ public class StudentService {
     // studentDetail：学生一人の情報 + その学生が受講している複数のコース情報
     // course：コース1つ分の情報（StudentCourse型）
     // Objects.isNullでnullチェックを明示的に行い、安全かつ読みやすくする
-    for (StudentCourse course : studentDetail.getStudentsCourses()) {
+    studentDetail.getStudentsCourses().forEach(course -> {
       if (Objects.isNull(course.getCourseStartDate())) {
         course.setCourseStartDate(LocalDate.now());
       }
       if (Objects.isNull(course.getCourseExpectedEndDate())) {
         course.setCourseExpectedEndDate(LocalDate.now().plusYears(1));
       }
-    }
+    });
     return studentDetail;
   }
 
@@ -160,31 +160,27 @@ public class StudentService {
     // 目的：画面から受け取った受講生基本情報を永続化する
     repository.saveStudent(studentDetail.getStudent());
 
+    // TODO: コメント整理
     // コース情報の登録。受講生に紐づく全てのコース情報を処理するループ
     // 目的：1人の受講生が複数のコースを受講できるようにする
-    for (StudentCourse studentCourse : studentDetail.getStudentsCourses()) {
-
-      // コース名に基づいた固定IDを取得
+    // コース名に基づいた固定IDを取得
+    // コースIDを設定
+    // 受講生IDをコース情報に設定
+    // 目的：コースと受講生を関連付け、どの受講生がどのコースを受講しているかを管理
+    // コース情報をデータベースのstudents_coursesテーブルに保存
+    // 目的：受講コース情報を永続化し、後から検索・参照できるようにする
+    studentDetail.getStudentsCourses().forEach(studentCourse -> {
       String courseID = getCommonCourseId(studentCourse.getCourseName());
-
-      // コースIDを設定
       studentCourse.setCourseId(courseID);
-
-      // 受講生IDをコース情報に設定
-      // 目的：コースと受講生を関連付け、どの受講生がどのコースを受講しているかを管理
       studentCourse.setStudentId(studentUuid);
-
       if (Objects.isNull(studentCourse.getCourseStartDate())) {
         studentCourse.setCourseStartDate(LocalDate.now());
       }
       if (Objects.isNull(studentCourse.getCourseExpectedEndDate())) {
         studentCourse.setCourseExpectedEndDate(LocalDate.now().plusYears(1));
       }
-
-      // コース情報をデータベースのstudents_coursesテーブルに保存
-      // 目的：受講コース情報を永続化し、後から検索・参照できるようにする
       repository.saveStudentCourse(studentCourse);
-    }
+    });
   }
 
   // コース名に基づいて固定IDを取得するメソッド
