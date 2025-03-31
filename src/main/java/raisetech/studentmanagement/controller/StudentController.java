@@ -7,6 +7,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -152,7 +153,7 @@ public class StudentController {
    * @param studentDetail 更新対象の受講生詳細情報 (受講生情報と受講生コース情報)
    * @return 更新処理の結果メッセージ
    */
-  @PostMapping("/updateStudents")
+  @PutMapping("/updateStudents")
   // ResponseEntityは、SpringBootでHTTPレスポンスを返すための特別なクラス
   // ResponseEntity<String> を使用して、更新結果のメッセージをHTTPレスポンスとして返す
   // @RequestBodyにより、リクエストのJSONデータをStudentDetail型のオブジェクトとして受け取る
