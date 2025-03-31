@@ -92,12 +92,7 @@ public class StudentService {
     // course：コース1つ分の情報（StudentCourse型）
     // Objects.isNullでnullチェックを明示的に行い、安全かつ読みやすくする
     studentDetail.getStudentsCourses().forEach(course -> {
-      if (Objects.isNull(course.getCourseStartDate())) {
-        course.setCourseStartDate(LocalDate.now());
-      }
-      if (Objects.isNull(course.getCourseExpectedEndDate())) {
-        course.setCourseExpectedEndDate(LocalDate.now().plusYears(1));
-      }
+      setDefaultCourseDatesIfNull(course);
     });
     return studentDetail;
   }
@@ -171,16 +166,22 @@ public class StudentService {
     // 目的：受講コース情報を永続化し、後から検索・参照できるようにする
     studentDetail.getStudentsCourses().forEach(studentCourse -> {
       String courseID = getCommonCourseId(studentCourse.getCourseName());
-      studentCourse.setCourseId(courseID);
-      studentCourse.setStudentId(studentUuid);
+      initStudentCourse(studentCourse, courseID, studentUuid);
+      LocalDate now = LocalDate.now();
       if (Objects.isNull(studentCourse.getCourseStartDate())) {
-        studentCourse.setCourseStartDate(LocalDate.now());
+        studentCourse.setCourseStartDate(now);
       }
       if (Objects.isNull(studentCourse.getCourseExpectedEndDate())) {
-        studentCourse.setCourseExpectedEndDate(LocalDate.now().plusYears(1));
+        studentCourse.setCourseExpectedEndDate(now.plusYears(1));
       }
       repository.saveStudentCourse(studentCourse);
     });
+  }
+
+  private static void initStudentCourse(StudentCourse studentCourse, String courseID,
+      String studentUuid) {
+    studentCourse.setCourseId(courseID);
+    studentCourse.setStudentId(studentUuid);
   }
 
   // コース名に基づいて固定IDを取得するメソッド
@@ -222,22 +223,12 @@ public class StudentService {
       studentCourse.setCourseId(courseId);
 
       //フォームから送信された StudentCourse オブジェクトに日付情報がない場合でも、自動的に値が設定されるようになる
-      if (Objects.isNull(studentCourse.getCourseStartDate())) {
-        studentCourse.setCourseStartDate(LocalDate.now());
-      }
-      if (Objects.isNull(studentCourse.getCourseExpectedEndDate())) {
-        studentCourse.setCourseExpectedEndDate(LocalDate.now().plusYears(1));
-      }
+      setDefaultCourseDatesIfNull(studentCourse);
 
-      boolean courseExists = false;
+      boolean courseExists = existingCourses.stream()
+          .anyMatch(existing -> existing.getCourseId().equals(courseId));
 
       // 該当する受講生が受講している全コースから、更新対象のコースIDと一致するものを探す
-      for (StudentCourse existing : existingCourses) {
-        if (existing.getCourseId().equals(courseId)) {
-          courseExists = true;
-          break;
-        }
-      }
 
       // 該当コースが存在する場合は更新、存在しない場合は新規登録を行う
       // 目的：APIからの更新リクエストを柔軟に処理し、データの整合性を保つ
@@ -248,6 +239,16 @@ public class StudentService {
         // 新規コースとして登録
         repository.saveStudentCourse(studentCourse);
       }
+    }
+  }
+
+  private static void setDefaultCourseDatesIfNull(StudentCourse studentCourse) {
+    LocalDate now = LocalDate.now();
+    if (Objects.isNull(studentCourse.getCourseStartDate())) {
+      studentCourse.setCourseStartDate(now);
+    }
+    if (Objects.isNull(studentCourse.getCourseExpectedEndDate())) {
+      studentCourse.setCourseExpectedEndDate(now.plusYears(1));
     }
   }
 }
