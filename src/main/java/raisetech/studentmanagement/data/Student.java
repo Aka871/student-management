@@ -7,15 +7,19 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 // Data層。データの設計図のようなもの(どんな情報を扱うのかが分かる)
 // Lombokで自動的にフィールドに対して、getterメソッドとsetterメソッドを生成
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Student {
-  
+
   // アプリ側で自動補完される場合でも、安全のためnull禁止にしておく
   @NotNull(message = "受講生IDは必須です")
   private String studentId;
