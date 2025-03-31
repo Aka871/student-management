@@ -35,8 +35,7 @@ public class StudentCourse {
   private LocalDate courseExpectedEndDate;
 
   public String getCourseStartDateFormatted() {
-
-    // nullのときに空文字列を返し、そうでないときに日付を文字列形式で返す
+    
     if (courseStartDate == null) {
       return "";
     }

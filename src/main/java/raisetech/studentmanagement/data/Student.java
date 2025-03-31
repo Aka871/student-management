@@ -12,8 +12,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-// Data層。データの設計図のようなもの(どんな情報を扱うのかが分かる)
-// Lombokで自動的にフィールドに対して、getterメソッドとsetterメソッドを生成
 @Getter
 @Setter
 @NoArgsConstructor
@@ -57,8 +55,7 @@ public class Student {
   @NotNull(message = "年齢は必須です")
   @Min(value = 5, message = "5歳以上で入力してください")
   @Max(value = 110, message = "110歳以下で入力してください")
-  // デフォルト値がnullのInteger型に変更。int型だとデフォルト値が0になるため、未登録でも0と表示される。
-  // StudentList.htmlでageがnullの場合、空白になるように設定
+  // デフォルト値がnullのInteger型に変更。int型だとデフォルト値が0になるため、未登録でも0と表示されてしまう。
   private Integer age;
 
   @NotBlank(message = "性別は必須です")
@@ -71,6 +68,6 @@ public class Student {
   @Size(max = 255, message = "備考は255文字以内で入力してください")
   private String remark;
 
-  // thymeleafとの連携問題を解決するため、フィールド名をdeletedにした。
+  // thymeleafとの連携問題を解決するため、フィールド名をdeletedにした
   private boolean deleted;
 }
