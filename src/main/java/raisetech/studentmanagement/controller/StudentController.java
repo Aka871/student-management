@@ -87,40 +87,6 @@ public class StudentController {
     return ResponseEntity.ok(studentDetail);
   }
 
-  // TODO: 将来的に /students/details を削除する際、一緒にこのメソッドも削除する予定
-  @GetMapping("/courses")
-  //戻り値をHTTPレスポンスボディとして返す（JavaオブジェクトからJSONに自動変換）
-  @ResponseBody
-
-  //StudentCourseというクラスのオブジェクトを複数の要素として持つリストを返す
-  public List<StudentCourse> getCourses(
-
-      //メソッドの引数courseNameは、クエリパラメータ（URLの?courseName=value部分）を受け取る
-      //@RequestParam(required = false)により、courseNameは省略可能（値が渡されなくても動作する)
-      @RequestParam(required = false) String courseName) {
-    return service.getCourses(courseName);
-  }
-
-  // TODO: 今後、削除するか要検討 (仕様が明確になった段階で、削除または機能追加)
-  //  現時点では未使用だが、論理削除済みの受講生を含む全件取得や、将来的な検索機能の土台として活用する可能性がある。
-  @GetMapping("/students/details")
-
-  //@ResponseBodyアノテーションを付与することで、このメソッドが返す値がJSON形式で返されるようになる
-  //@RestController をクラスに付けると、全メソッドがデフォルトでデータ（JSONやXML）を返す設定になり、HTMLのテンプレートを使用する場合にエラーが発生する
-  //HTMLテンプレートを返すメソッドとデータだけを返すメソッドが混在している/students/details場合、
-  //@ResponseBodyアノテーションを付けることで、データだけを返すメソッドであることを示す
-  @ResponseBody
-  public List<StudentDetail> searchStudents() {
-
-    //すべての生徒情報とコース情報を取得(引数がnullのため)
-    //List<Student>の中には、Studentクラスのインスタンスが格納されている。変数名は任意で良い
-    List<Student> students = service.getStudents(null, null);
-    List<StudentCourse> studentCourses = service.getCourses(null);
-
-    //List<StudentDetail>型のconverter.convertStudentDetails()は、生徒情報とコース情報をもとに、StudentDetailクラスのリストを作成して返す
-    return converter.convertStudentDetails(students, studentCourses);
-  }
-
   /**
    * 新規で受講生詳細情報を登録します。
    * 受講生情報と受講生コース情報をそれぞれ登録します。
@@ -167,5 +133,39 @@ public class StudentController {
     //サービス層のregisterStudentメソッドを呼び出し、studentDetailから取り出した学生情報を登録する
     service.updateStudentDetail(studentDetail);
     return ResponseEntity.ok("更新処理が成功しました！");
+  }
+
+  // TODO: 将来的に /students/details を削除する際、一緒にこのメソッドも削除する予定
+  @GetMapping("/courses")
+  //戻り値をHTTPレスポンスボディとして返す（JavaオブジェクトからJSONに自動変換）
+  @ResponseBody
+
+  //StudentCourseというクラスのオブジェクトを複数の要素として持つリストを返す
+  public List<StudentCourse> getCourses(
+
+      //メソッドの引数courseNameは、クエリパラメータ（URLの?courseName=value部分）を受け取る
+      //@RequestParam(required = false)により、courseNameは省略可能（値が渡されなくても動作する)
+      @RequestParam(required = false) String courseName) {
+    return service.getCourses(courseName);
+  }
+
+  // TODO: 今後、削除するか要検討 (仕様が明確になった段階で、削除または機能追加)
+  //  現時点では未使用だが、論理削除済みの受講生を含む全件取得や、将来的な検索機能の土台として活用する可能性がある。
+  @GetMapping("/students/details")
+
+  //@ResponseBodyアノテーションを付与することで、このメソッドが返す値がJSON形式で返されるようになる
+  //@RestController をクラスに付けると、全メソッドがデフォルトでデータ（JSONやXML）を返す設定になり、HTMLのテンプレートを使用する場合にエラーが発生する
+  //HTMLテンプレートを返すメソッドとデータだけを返すメソッドが混在している/students/details場合、
+  //@ResponseBodyアノテーションを付けることで、データだけを返すメソッドであることを示す
+  @ResponseBody
+  public List<StudentDetail> searchStudents() {
+
+    //すべての生徒情報とコース情報を取得(引数がnullのため)
+    //List<Student>の中には、Studentクラスのインスタンスが格納されている。変数名は任意で良い
+    List<Student> students = service.getStudents(null, null);
+    List<StudentCourse> studentCourses = service.getCourses(null);
+
+    //List<StudentDetail>型のconverter.convertStudentDetails()は、生徒情報とコース情報をもとに、StudentDetailクラスのリストを作成して返す
+    return converter.convertStudentDetails(students, studentCourses);
   }
 }
