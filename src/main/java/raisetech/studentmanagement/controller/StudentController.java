@@ -1,5 +1,6 @@
 package raisetech.studentmanagement.controller;
 
+import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -76,7 +77,7 @@ public class StudentController {
    * @return 登録処理の結果メッセージ
    */
   @PostMapping("/students")
-  public ResponseEntity<String> registerStudents(@RequestBody StudentDetail studentDetail) {
+  public ResponseEntity<String> registerStudents(@RequestBody @Valid StudentDetail studentDetail) {
 
     for (StudentCourse course : studentDetail.getStudentsCourses()) {
       if (course.getCourseStartDate() != null) {
