@@ -25,19 +25,24 @@
    例えば、MySQLのstudentsテーブルのfull_nameというカラムに、Studentクラスで定義されている変数（フィールド）fullNameの値を挿入しています
   -->
   <insert id="saveStudent" parameterType="raisetech.studentmanagement.data.Student">
-    INSERT INTO students (student_id, full_name, furigana_name, nick_name, phone_number,
-    mail_address, municipality_name, age, sex, occupation, remark)"
-    + "VALUES (#{studentId}, #{fullName}, #{furiganaName}, #{nickName}, #{phoneNumber},
-    #{mailAddress}, #{municipalityName},"
-    + " #{age},#{sex}, #{occupation}, #{remark})
+    INSERT INTO students (
+    student_id, full_name, furigana_name, nick_name, phone_number,
+    mail_address, municipality_name, age, sex, occupation, remark
+    )
+    VALUES (
+    #{studentId}, #{fullName}, #{furiganaName}, #{nickName}, #{phoneNumber},
+    #{mailAddress}, #{municipalityName}, #{age}, #{sex}, #{occupation}, #{remark}
+    )
   </insert>
 
   <!-- 受講生コース情報を新規登録します -->
   <insert id="saveStudentCourse" parameterType="raisetech.studentmanagement.data.StudentCourse">
-    INSERT INTO students_courses(course_id, student_id, course_name, course_start_date,
-    course_expected_end_date)"
-    + "VALUES (#{courseId}, #{studentId}, #{courseName}, #{courseStartDate},
-    #{courseExpectedEndDate})
+    INSERT INTO students_courses (
+    course_id, student_id, course_name, course_start_date, course_expected_end_date
+    )
+    VALUES (
+    #{courseId}, #{studentId}, #{courseName}, #{courseStartDate}, #{courseExpectedEndDate}
+    )
   </insert>
 
   <!-- 受講生情報を更新します -->
