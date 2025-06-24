@@ -1,4 +1,4 @@
-package raisetech.studentmanagement.controller;
+package raisetech.studentmanagement.exception;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -6,7 +6,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import raisetech.studentmanagement.exception.StudentNotFoundException;
 
 /**
  * アプリケーション全体の例外をまとめて管理するグローバル例外ハンドラーです。
