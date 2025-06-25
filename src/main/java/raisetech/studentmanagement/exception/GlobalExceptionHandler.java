@@ -16,6 +16,13 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+  /**
+   * バリデーションエラー（フォーム入力の不備）が発生した場合の例外をハンドリングします。
+   * クライアントに400 Bad Requestステータスと、どの項目にどのような不備があるのかという、詳細なエラーメッセージを返します。
+   *
+   * @param ex 発生したMethodArgumentNotValidException
+   * @return エラーメッセージを含むJSON形式のレスポンスとHTTPステータスコード 400 (Bad Request)
+   */
   @ExceptionHandler(MethodArgumentNotValidException.class)
   public ResponseEntity<Map<String, String>> handleValidationExceptions(
       MethodArgumentNotValidException ex) {
