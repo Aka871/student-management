@@ -17,6 +17,7 @@ import raisetech.studentmanagement.controller.converter.StudentConverter;
 import raisetech.studentmanagement.data.Student;
 import raisetech.studentmanagement.data.StudentCourse;
 import raisetech.studentmanagement.domain.StudentDetail;
+import raisetech.studentmanagement.exception.TestException;
 import raisetech.studentmanagement.service.StudentService;
 
 /**
@@ -67,6 +68,11 @@ public class StudentController {
     StudentDetail studentDetail = service.getStudentDetailById(studentId);
 
     return ResponseEntity.ok(studentDetail);
+  }
+
+  @GetMapping("/exception")
+  public ResponseEntity<String> exceptionConfirmation() throws TestException {
+    throw new TestException("例外処理の確認用です");
   }
 
   /**
@@ -125,7 +131,7 @@ public class StudentController {
 
     List<Student> students = service.getStudents(null, null);
     List<StudentCourse> studentCourses = service.getCourses(null);
-    
+
     return converter.convertStudentDetails(students, studentCourses);
   }
 }

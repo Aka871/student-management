@@ -47,4 +47,10 @@ public class GlobalExceptionHandler {
     errorResponse.put("error", ex.getMessage());
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
   }
+
+  @ExceptionHandler(TestException.class)
+  public ResponseEntity<String> handleTestException(
+      TestException ex) {
+    return ResponseEntity.status(HttpStatus.OK).body(ex.getMessage());
+  }
 }
