@@ -48,6 +48,13 @@ public class GlobalExceptionHandler {
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
   }
 
+  /**
+   * 例外処理が正しく行われるかを確認するための例外をハンドリングします。
+   * クライアントに200 OKステータスと例外確認用と分かるメッセージを返します。
+   *
+   * @param ex 発生したTestException
+   * @return メッセージのレスポンスとHTTPステータスコード 200 (OK)
+   */
   @ExceptionHandler(TestException.class)
   public ResponseEntity<String> handleTestException(
       TestException ex) {
