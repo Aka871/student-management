@@ -9,6 +9,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * 受講生コース情報を扱うクラスです。
+ * データベースの情報をJavaオブジェクトとして扱えるようにします。
+ */
 @Getter
 @Setter
 @NoArgsConstructor

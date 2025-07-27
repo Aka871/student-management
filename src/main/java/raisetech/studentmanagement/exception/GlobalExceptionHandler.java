@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 /**
- * アプリケーション全体の例外をまとめて管理するグローバル例外ハンドラーです。
+ * アプリケーション全体の例外をまとめて管理する、グローバル例外ハンドラーです。
  * このクラスに定義されたメソッドは、特定の例外が発生した際に呼び出され、
  * クライアントに適切なエラーレスポンスを返します。
  */

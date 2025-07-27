@@ -21,8 +21,9 @@ import raisetech.studentmanagement.exception.TestException;
 import raisetech.studentmanagement.service.StudentService;
 
 /**
- * 受講生の検索や登録、更新などを行うREST APIとして受け付けるControllerです。
- * 各エンドポイントはJSON形式でレスポンスを返します。
+ * 受講生情報と受講生コース情報の取得・登録・更新などを行うREST APIのControllerクラスです。
+ * 各エンドポイントはJSON形式でリクエストとレスポンスをやり取りします。
+ * 主にService層を呼び出して、ビジネスロジックの実行結果を返します。
  */
 @Validated
 @RestController
@@ -119,7 +120,9 @@ public class StudentController {
     return ResponseEntity.ok("更新処理が成功しました！");
   }
 
-  // TODO: 将来的に /students/details を削除する際、一緒にこのメソッドも削除する予定
+  // TODO: 現在は未使用です。
+  //  今後、仕様が固まった段階で、削除または修正することを検討します。
+  //   @GetMapping("/students/details")を削除する場合は、一緒にこのメソッドも削除する予定です。
   @GetMapping("/courses")
   @ResponseBody
   public List<StudentCourse> getCourses(
@@ -128,8 +131,9 @@ public class StudentController {
     return service.getCourses(courseName);
   }
 
-  // TODO: 今後、削除するか要検討 (仕様が明確になった段階で、削除または機能追加)
-  //  現時点では未使用だが、論理削除済みの受講生を含む全件取得や、将来的な検索機能の土台として活用する可能性がある。
+  // TODO: 現在は未使用です。
+  //  今後、論理削除済みの受講生を含む全件取得や、将来的な検索機能の土台として活用する可能性があります。
+  //  仕様が固まった段階で、削除または修正することを検討します。
   @GetMapping("/students/details")
   @ResponseBody
   public List<StudentDetail> searchStudents() {
