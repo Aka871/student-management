@@ -19,7 +19,7 @@
   </select>
 
   <!-- 受講生情報を新規登録します
-   student_idはUUID()で自動生成されるように設定
+   student_idはUUID()で自動生成されるように設定します
    #{}の部分は、メソッド引数のStudentオブジェクトのフィールド値を対応する場所に埋め込むことを意味します
    MySQLのstudentsテーブルの各列に、Studentオブジェクトの各フィールドの値を挿入しています
    例えば、MySQLのstudentsテーブルのfull_nameというカラムに、Studentクラスで定義されている変数（フィールド）fullNameの値を挿入しています
@@ -64,9 +64,9 @@
   </update>
 
   <!--
-   受講生コース情報を更新します。
-   特定の受講生（studentId）かつ特定のコース（courseId）に該当する受講生コース情報を更新します。
-   特定の受講生の特定のコースだけを更新したい場合、WHERE句には、studentIdとcourseIdの両方を指定する必要があります。
+   受講生コース情報を更新します
+   特定の受講生（studentId）かつ特定のコース（courseId）に該当する受講生コース情報を更新します
+   特定の受講生の特定のコースだけを更新したい場合、WHERE句には、studentIdとcourseIdの両方を指定する必要があります
   -->
   <update id="updateStudentCourse" parameterType="raisetech.studentmanagement.data.StudentCourse">
     UPDATE students_courses
@@ -79,8 +79,8 @@
   </update>
 
   <!--
-  すべての受講生コース情報を取得します。
-  TODO: 将来的に /students/details を削除する際は、このSQLも削除する予定です。
+  すべての受講生コース情報を取得します
+  TODO: 現在は未使用です。今後、仕様が固まった段階で、削除または修正することを検討します。@GetMapping("/students/details")を削除する場合は、一緒にこのSQLも削除する予定です。
   -->
   <select id="searchCourses" resultType="raisetech.studentmanagement.data.StudentCourse">
     SELECT * FROM students_courses

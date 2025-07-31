@@ -7,7 +7,8 @@ import raisetech.studentmanagement.data.Student;
 import raisetech.studentmanagement.data.StudentCourse;
 
 /**
- * 受講生テーブル、受講生コース情報テーブルと紐づくRepositoryです。
+ * 受講生情報および受講生コース情報に関するデータベース操作を行う、Repositoryインターフェースです。
+ * MyBatisによってSQL文とマッピングされ、受講生情報テーブルと受講生コース情報テーブルにアクセスします。
  */
 @Mapper
 
@@ -23,12 +24,13 @@ public interface StudentRepository {
   /**
    * 受講生情報を取得します。
    * 受講生IDに紐づく任意の受講生情報を取得します。
-   * データが存在しない場合は、Optional.empty() が返されます。
+   * <p>
+   * データが存在しない場合は、Optional.empty() を返します。
+   * Optionalを使うことで、呼び出し側が「値が存在しない場合」の処理を明確に記述することができ、nullチェックの必要がなくなります。
    *
    * @param studentId 受講生ID
    * @return 受講生IDに紐づく受講生情報 (存在しない場合は、Optional.empty ())
    */
-  // Optionalを返すことで、Service層でのnullチェックが不要になり、例外処理を明確に記述できる
   Optional<Student> findById(String studentId);
 
   /**
@@ -71,6 +73,8 @@ public interface StudentRepository {
   // 特定の受講生の特定のコースだけを更新したい場合、WHERE句には、studentIdとcourseIdの両方を指定する必要がある
   void updateStudentCourse(StudentCourse studentCourse);
 
-  // TODO: 将来的に /students/details を削除する際、一緒にこのメソッドも削除する予定
+  // TODO: 現在は未使用です。
+  //  今後、仕様が固まった段階で、削除または修正することを検討します。
+  //   @GetMapping("/students/details")を削除する場合は、一緒にこのメソッドも削除する予定です。
   List<StudentCourse> searchCourses();
 }

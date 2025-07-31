@@ -2,7 +2,6 @@ package raisetech.studentmanagement.data;
 
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 import lombok.AllArgsConstructor;
@@ -10,32 +9,35 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * 受講生コース情報を扱うクラスです。
+ * データベースの情報をJavaオブジェクトとして扱えるようにします。
+ */
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class StudentCourse {
 
-  // アプリ側で自動補完される場合でも、安全のためnull禁止にしておく
-  @NotNull(message = "コースIDは必須です")
+  // courseNameに対応するコースIDが自動で設定される（入力不要）
   private String courseId;
 
-  @NotNull(message = "受講生IDは必須です")
+  // UUIDで自動生成されたStudentのIDが紐づく（入力不要）
   private String studentId;
 
   @NotBlank(message = "コース名は必須です")
   @Size(max = 100, message = "コース名は100文字以内で入力してください")
   private String courseName;
 
-  @NotNull(message = "開始日は必須です")
+  // 未入力の場合、登録日の日付が自動で設定される
   private LocalDate courseStartDate;
 
-  @NotNull(message = "終了予定日は必須です")
+  // 未入力の場合、コース開始日の1年後が自動で設定される
   @Future(message = "終了予定日は今日より後の日付を入力してください")
   private LocalDate courseExpectedEndDate;
 
   public String getCourseStartDateFormatted() {
-    
+
     if (courseStartDate == null) {
       return "";
     }

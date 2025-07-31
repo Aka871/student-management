@@ -12,14 +12,17 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * 受講生情報を扱うクラスです。
+ * データベースの情報をJavaオブジェクトとして扱えるようにします。
+ */
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Student {
 
-  // アプリ側で自動補完される場合でも、安全のためnull禁止にしておく
-  @NotNull(message = "受講生IDは必須です")
+  // UUIDが自動で設定される（入力不要）
   private String studentId;
 
   @NotBlank(message = "氏名は必須です")
