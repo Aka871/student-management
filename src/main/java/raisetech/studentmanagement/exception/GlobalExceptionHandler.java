@@ -49,6 +49,21 @@ public class GlobalExceptionHandler {
   }
 
   /**
+   * Enumで定義されたコース名が、見つからない場合の例外をハンドリングします。
+   * クライアントに404 Not Foundステータスと詳細なエラーメッセージを返します。
+   *
+   * @param ex 発生したCourseNotFoundException
+   * @return エラーメッセージを含むJSON形式のレスポンスとHTTPステータスコード 404 (NOT FOUND)
+   */
+  @ExceptionHandler(CourseNotFoundException.class)
+  public ResponseEntity<Map<String, String>> handleCourseNotFoundException(
+      CourseNotFoundException ex) {
+    Map<String, String> errorResponse = new HashMap<>();
+    errorResponse.put("error", ex.getMessage());
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+  }
+
+  /**
    * 例外処理が正しく行われるかを確認するための例外をハンドリングします。
    * クライアントに200 OKステータスと例外確認用と分かるメッセージを返します。
    *

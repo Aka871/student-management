@@ -1,5 +1,7 @@
 package raisetech.studentmanagement.data;
 
+import raisetech.studentmanagement.exception.CourseNotFoundException;
+
 /**
  * 受講可能なコースの種類を表すEnumクラスです。
  * 各コースに対応するコース名とコースIDのペアを定義します。
@@ -10,8 +12,7 @@ public enum CourseType {
   AWS_FULL("AWSフルコース", "A002"),
   WORDPRESS("WordPress副業コース", "A003"),
   DESIGN("デザインコース", "A004"),
-  WEB_MARKETING("Webマーケティングコース", "A005"),
-  UNKNOWN("", "A999"); // 未知のコースの場合
+  WEB_MARKETING("Webマーケティングコース", "A005");
 
   private final String courseName;
   private final String courseId;
@@ -37,10 +38,11 @@ public enum CourseType {
 
   /**
    * コース名からコースIDを取得します。
-   * コース名がEnumで設定されているコース名と一致している場合は、ペアになっているコースIDを返します。
-   * 一致しなければ、UNKNOWN(未知のコース)のIDを返します。
+   * コース名がEnumで定義されているコース名と一致している場合は、ペアになっているコースIDを返します。
+   * 一致しなければ、CourseNotFoundExceptionをスローします。
    *
    * @param courseName コース名
+   * @throws CourseNotFoundException 指定したコース名が存在しない場合にスロー
    */
   public static CourseType fromCourseName(String courseName) {
 
@@ -50,6 +52,6 @@ public enum CourseType {
         return type;
       }
     }
-    return UNKNOWN;
+    throw new CourseNotFoundException(courseName);
   }
 }

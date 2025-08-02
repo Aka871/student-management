@@ -117,6 +117,7 @@ public class StudentController {
         course.setCourseExpectedEndDate(course.getCourseStartDate().plusYears(1));
       }
     }
+    service.updateStudentDetail(studentDetail);
     return ResponseEntity.ok("更新処理が成功しました！");
   }
 
