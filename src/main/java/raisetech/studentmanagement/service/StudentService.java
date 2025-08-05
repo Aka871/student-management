@@ -113,13 +113,10 @@ public class StudentService {
   /**
    * 受講生詳細情報を新規登録します。
    * 受講生情報と受講生コース情報をそれぞれ登録します。
-   * UUIDを受講生IDとして付与し、コース情報と関連付けてデータベースに保存します。
    * <p>
-   * 各コース情報について、以下の処理を行います：
-   * <ul>
-   *  <li> コース開始日がnullの場合、入力日を設定します。</li>
-   *  <li> コース終了予定日がnullの場合、コース開始日から1年後の日付を設定します。</li>
-   * </ul>
+   * UUIDを受講生IDとして付与し、コース情報と関連付けてデータベースに保存します。<br>
+   * コース開始日・コース終了日がnullの場合は、自動的に日付が補完されます。(詳細は{@link #setDefaultCourseDatesIfNull(StudentCourse
+   * studentCourse)}を参照)
    *
    * @param studentDetail 登録対象の受講生詳細情報 (受講生情報と受講生コース情報)
    */
@@ -140,15 +137,9 @@ public class StudentService {
       String courseID = getCommonCourseId(studentCourse.getCourseName());
 
       initStudentCourse(studentCourse, courseID, studentUuid);
+      
+      setDefaultCourseDatesIfNull(studentCourse);
 
-      LocalDate now = LocalDate.now();
-
-      if (Objects.isNull(studentCourse.getCourseStartDate())) {
-        studentCourse.setCourseStartDate(now);
-      }
-      if (Objects.isNull(studentCourse.getCourseExpectedEndDate())) {
-        studentCourse.setCourseExpectedEndDate(now.plusYears(1));
-      }
       repository.saveStudentCourse(studentCourse);
     });
   }
