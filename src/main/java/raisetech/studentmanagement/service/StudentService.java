@@ -137,7 +137,7 @@ public class StudentService {
       String courseID = getCommonCourseId(studentCourse.getCourseName());
 
       initStudentCourse(studentCourse, courseID, studentUuid);
-      
+
       setDefaultCourseDatesIfNull(studentCourse);
 
       repository.saveStudentCourse(studentCourse);
@@ -172,6 +172,10 @@ public class StudentService {
    * <p>
    * 受講生IDに紐づいている受講生の情報を取得し、該当する更新対象のコースIDと一致するものを探します。
    * 該当コースが存在する場合は更新、存在しない場合は新規登録を行います。
+   * <p>
+   * 受講生情報と受講生コース情報を関連付けるため、受講生情報の受講生IDを、受講生コース情報の受講生IDに紐付けます。<br>
+   * コース開始日・コース終了日がnullの場合は、自動的に日付が補完されます。(詳細は{@link #setDefaultCourseDatesIfNull(StudentCourse
+   * studentCourse)}を参照)
    *
    * @param studentDetail 更新対象の受講生詳細情報 (受講生情報と受講生コース情報)
    * @throws StudentNotFoundException 指定したIDの受講生が存在しない場合にスロー
@@ -192,7 +196,10 @@ public class StudentService {
     for (StudentCourse studentCourse : studentDetail.getStudentsCourses()) {
 
       String courseId = CourseType.fromCourseName(studentCourse.getCourseName()).getCourseId();
+
       studentCourse.setCourseId(courseId);
+
+      initStudentCourse(studentCourse, courseId, studentId);
 
       setDefaultCourseDatesIfNull(studentCourse);
 
