@@ -67,7 +67,6 @@ public class StudentService {
    * 受講生情報と受講生コース情報を合わせたものを取得します。
    * 対象は、指定した受講生IDに紐づく、受講生詳細情報です。
    * <p>
-   * 取得した受講生コース情報のコース開始日がnullの場合は、入力日を設定します。
    *
    * @param studentId 受講生ID
    * @return 指定したIDの受講生詳細情報（受講生情報と受講生コース情報を結合したもの）
@@ -82,9 +81,6 @@ public class StudentService {
 
     StudentDetail studentDetail = new StudentDetail(student, courses);
 
-    studentDetail.getStudentsCourses().forEach(course -> {
-      setDefaultCourseDatesIfNull(course);
-    });
     return studentDetail;
   }
 
