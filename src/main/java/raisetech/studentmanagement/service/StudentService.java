@@ -67,7 +67,6 @@ public class StudentService {
    * 受講生情報と受講生コース情報を合わせたものを取得します。
    * 対象は、指定した受講生IDに紐づく、受講生詳細情報です。
    * <p>
-   * 取得した受講生コース情報のコース開始日がnullの場合は、入力日を設定します。
    *
    * @param studentId 受講生ID
    * @return 指定したIDの受講生詳細情報（受講生情報と受講生コース情報を結合したもの）
@@ -82,9 +81,6 @@ public class StudentService {
 
     StudentDetail studentDetail = new StudentDetail(student, courses);
 
-    studentDetail.getStudentsCourses().forEach(course -> {
-      setDefaultCourseDatesIfNull(course);
-    });
     return studentDetail;
   }
 
@@ -113,13 +109,10 @@ public class StudentService {
   /**
    * 受講生詳細情報を新規登録します。
    * 受講生情報と受講生コース情報をそれぞれ登録します。
-   * UUIDを受講生IDとして付与し、コース情報と関連付けてデータベースに保存します。
    * <p>
-   * 各コース情報について、以下の処理を行います：
-   * <ul>
-   *  <li> コース開始日がnullの場合、入力日を設定します。</li>
-   *  <li> コース終了予定日がnullの場合、コース開始日から1年後の日付を設定します。</li>
-   * </ul>
+   * UUIDを受講生IDとして付与し、コース情報と関連付けてデータベースに保存します。<br>
+   * コース開始日・コース終了日がnullの場合は、自動的に日付が補完されます。(詳細は{@link #setDefaultCourseDatesIfNull(StudentCourse
+   * studentCourse)}を参照)
    *
    * @param studentDetail 登録対象の受講生詳細情報 (受講生情報と受講生コース情報)
    */
@@ -141,14 +134,8 @@ public class StudentService {
 
       initStudentCourse(studentCourse, courseID, studentUuid);
 
-      LocalDate now = LocalDate.now();
+      setDefaultCourseDatesIfNull(studentCourse);
 
-      if (Objects.isNull(studentCourse.getCourseStartDate())) {
-        studentCourse.setCourseStartDate(now);
-      }
-      if (Objects.isNull(studentCourse.getCourseExpectedEndDate())) {
-        studentCourse.setCourseExpectedEndDate(now.plusYears(1));
-      }
       repository.saveStudentCourse(studentCourse);
     });
   }
@@ -181,6 +168,10 @@ public class StudentService {
    * <p>
    * 受講生IDに紐づいている受講生の情報を取得し、該当する更新対象のコースIDと一致するものを探します。
    * 該当コースが存在する場合は更新、存在しない場合は新規登録を行います。
+   * <p>
+   * 受講生情報と受講生コース情報を関連付けるため、受講生情報の受講生IDを、受講生コース情報の受講生IDに紐付けます。<br>
+   * コース開始日・コース終了日がnullの場合は、自動的に日付が補完されます。(詳細は{@link #setDefaultCourseDatesIfNull(StudentCourse
+   * studentCourse)}を参照)
    *
    * @param studentDetail 更新対象の受講生詳細情報 (受講生情報と受講生コース情報)
    * @throws StudentNotFoundException 指定したIDの受講生が存在しない場合にスロー
@@ -201,7 +192,10 @@ public class StudentService {
     for (StudentCourse studentCourse : studentDetail.getStudentsCourses()) {
 
       String courseId = CourseType.fromCourseName(studentCourse.getCourseName()).getCourseId();
+
       studentCourse.setCourseId(courseId);
+
+      initStudentCourse(studentCourse, courseId, studentId);
 
       setDefaultCourseDatesIfNull(studentCourse);
 
