@@ -90,12 +90,6 @@ public class StudentController {
    */
   @PostMapping("/students")
   public ResponseEntity<String> registerStudents(@RequestBody @Valid StudentDetail studentDetail) {
-
-    for (StudentCourse course : studentDetail.getStudentsCourses()) {
-      if (course.getCourseStartDate() != null) {
-        course.setCourseExpectedEndDate(course.getCourseStartDate().plusYears(1));
-      }
-    }
     service.registerStudent(studentDetail);
 
     return ResponseEntity.ok("登録処理が成功しました！");
@@ -111,13 +105,8 @@ public class StudentController {
    */
   @PutMapping("/students")
   public ResponseEntity<String> updateStudentDetail(@RequestBody StudentDetail studentDetail) {
-
-    for (StudentCourse course : studentDetail.getStudentsCourses()) {
-      if (course.getCourseStartDate() != null) {
-        course.setCourseExpectedEndDate(course.getCourseStartDate().plusYears(1));
-      }
-    }
     service.updateStudentDetail(studentDetail);
+
     return ResponseEntity.ok("更新処理が成功しました！");
   }
 
