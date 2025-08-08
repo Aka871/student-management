@@ -216,6 +216,8 @@ public class StudentService {
    *  <li> コース開始日がnullの場合、入力日を設定します。</li>
    *  <li> コース終了予定日がnullの場合、コース開始日から1年後の日付を設定します。</li>
    * </ul>
+   * また、更新時にコース開始日のみが変更され、コース終了予定日がnullの場合も、
+   * 変更後のコース開始日から1年後の日付をコース終了予定日として設定します。
    *
    * @param studentCourse 受講生コース情報
    */
@@ -226,7 +228,7 @@ public class StudentService {
       studentCourse.setCourseStartDate(now);
     }
     if (Objects.isNull(studentCourse.getCourseExpectedEndDate())) {
-      studentCourse.setCourseExpectedEndDate(now.plusYears(1));
+      studentCourse.setCourseExpectedEndDate(studentCourse.getCourseStartDate().plusYears(1));
     }
   }
 
