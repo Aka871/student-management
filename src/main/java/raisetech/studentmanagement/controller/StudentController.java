@@ -1,5 +1,8 @@
 package raisetech.studentmanagement.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +54,10 @@ public class StudentController {
    *
    * @return 論理削除されていない受講生詳細情報のリスト（受講生情報と受講生コース情報を結合したもの）
    */
+  @Operation(summary = "受講生情報【一覧取得】", description = "受講生の詳細情報 (受講生情報と受講生コース情報) の一覧を取得します")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "受講生情報 (一覧) の取得に成功しました")})
+
   @GetMapping("/students")
   public List<StudentDetail> getStudents() {
     return service.getNotDeletedStudentsDetails();
@@ -64,6 +71,11 @@ public class StudentController {
    * @param studentId 受講生ID
    * @return 指定したIDの受講生詳細情報 (受講生情報と受講生コース情報を結合したもの)
    */
+  @Operation(summary = "受講生情報【個別取得】", description = "指定した受講生の詳細情報 (受講生情報と受講生コース情報) を取得します")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "受講生情報 (個別) の取得に成功しました"),
+      @ApiResponse(responseCode = "404", description = "受講生IDが見つかりません")})
+
   @GetMapping("/students/{studentId}")
   public ResponseEntity<StudentDetail> getStudentById(@PathVariable String studentId) {
     StudentDetail studentDetail = service.getStudentDetailById(studentId);
@@ -76,6 +88,10 @@ public class StudentController {
    *
    * @throws TestException 確認用に発生させる例外
    */
+  @Operation(summary = "例外処理の動作確認用", description = "例外処理が正しく行われるかを確認します")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "例外処理の動作確認に成功しました")})
+
   @GetMapping("/exception")
   public ResponseEntity<String> exceptionConfirmation() throws TestException {
     throw new TestException("例外処理の確認用です");
@@ -88,6 +104,10 @@ public class StudentController {
    * @param studentDetail 登録対象の受講生詳細情報 (受講生情報と受講生コース情報)
    * @return 登録処理の結果メッセージ
    */
+  @Operation(summary = "受講生情報【登録】", description = "受講生の詳細情報 (受講生情報と受講生コース情報) を登録します")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "受講生情報の登録に成功しました")})
+
   @PostMapping("/students")
   public ResponseEntity<String> registerStudents(@RequestBody @Valid StudentDetail studentDetail) {
     service.registerStudent(studentDetail);
@@ -103,6 +123,10 @@ public class StudentController {
    * @param studentDetail 更新対象の受講生詳細情報 (受講生情報と受講生コース情報)
    * @return 更新処理の結果メッセージ
    */
+  @Operation(summary = "受講生情報【更新】", description = "受講生の詳細情報 (受講生情報と受講生コース情報) を更新します")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "受講生情報の更新に成功しました")})
+
   @PutMapping("/students")
   public ResponseEntity<String> updateStudentDetail(@RequestBody StudentDetail studentDetail) {
     service.updateStudentDetail(studentDetail);
@@ -113,6 +137,10 @@ public class StudentController {
   // TODO: 現在は未使用です。
   //  今後、仕様が固まった段階で、削除または修正することを検討します。
   //   @GetMapping("/students/details")を削除する場合は、一緒にこのメソッドも削除する予定です。
+  @Operation(summary = "受講生コース情報【一覧取得】", description = "受講生コース情報の一覧を取得します")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "受講生コース情報 (一覧) の取得に成功しました")})
+
   @GetMapping("/courses")
   @ResponseBody
   public List<StudentCourse> getCourses(
@@ -124,6 +152,10 @@ public class StudentController {
   // TODO: 現在は未使用です。
   //  今後、論理削除済みの受講生を含む全件取得や、将来的な検索機能の土台として活用する可能性があります。
   //  仕様が固まった段階で、削除または修正することを検討します。
+  @Operation(summary = "受講生情報【一覧取得 (削除済みを含む) 】", description = "削除済みを含めた、受講生の詳細情報 (受講生情報と受講生コース情報) の一覧を取得します")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "受講生情報 (一覧・削除済みを含む) の取得に成功しました")})
+
   @GetMapping("/students/details")
   @ResponseBody
   public List<StudentDetail> searchStudents() {

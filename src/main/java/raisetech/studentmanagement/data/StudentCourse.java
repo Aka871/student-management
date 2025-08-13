@@ -1,5 +1,6 @@
 package raisetech.studentmanagement.data;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -13,6 +14,7 @@ import lombok.Setter;
  * 受講生コース情報を扱うクラスです。
  * データベースの情報をJavaオブジェクトとして扱えるようにします。
  */
+@Schema(description = "受講生コース情報")
 @Getter
 @Setter
 @NoArgsConstructor
