@@ -134,9 +134,16 @@ public class StudentController {
     return ResponseEntity.ok("更新処理が成功しました！");
   }
 
-  // TODO: 現在は未使用です。
-  //  今後、仕様が固まった段階で、削除または修正することを検討します。
-  //   @GetMapping("/students/details")を削除する場合は、一緒にこのメソッドも削除する予定です。
+  /**
+   * 受講生コース情報一覧を取得します。
+   * 対象は、すべての受講生 (論理削除されている受講生を含む) です。
+   * <p>
+   * コース名を指定した場合、該当するコースのみを取得します。
+   * コース名が未指定の場合は、すべての受講生コース情報を取得します。
+   *
+   * @param courseName コース名
+   * @return 受講生コース情報一覧
+   */
   @Operation(summary = "受講生コース情報【一覧取得】", description = "受講生コース情報の一覧を取得します")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "受講生コース情報 (一覧) の取得に成功しました")})
@@ -149,9 +156,15 @@ public class StudentController {
     return service.getCourses(courseName);
   }
 
-  // TODO: 現在は未使用です。
-  //  今後、論理削除済みの受講生を含む全件取得や、将来的な検索機能の土台として活用する可能性があります。
-  //  仕様が固まった段階で、削除または修正することを検討します。
+  /**
+   * 受講生詳細情報一覧を取得します。
+   * 受講生情報と受講生コース情報を合わせたものを取得します。
+   * 対象は、すべての受講生 (論理削除されている受講生を含む) です。
+   * <p>
+   * 論理削除されていない受講生のみを取得したい場合は /students エンドポイントを使用してください。
+   *
+   * @return 受講生詳細情報のリスト（受講生情報と受講生コース情報を結合したもの）
+   */
   @Operation(summary = "受講生情報【一覧取得 (削除済みを含む) 】", description = "削除済みを含めた、受講生の詳細情報 (受講生情報と受講生コース情報) の一覧を取得します")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "受講生情報 (一覧・削除済みを含む) の取得に成功しました")})
