@@ -54,9 +54,10 @@ public class StudentController {
    *
    * @return 論理削除されていない受講生詳細情報のリスト（受講生情報と受講生コース情報を結合したもの）
    */
-  @Operation(summary = "受講生情報【一覧取得】", description = "受講生の詳細情報 (受講生情報と受講生コース情報) の一覧を取得します")
+  @Operation(summary = "受講生詳細情報【一覧取得 (削除済みを除く) 】", description = "受講生の詳細情報 (受講生情報と受講生コース情報) の一覧を取得します。論理削除されている受講生の情報は除きます。")
+
   @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "受講生情報 (一覧) の取得に成功しました")})
+      @ApiResponse(responseCode = "200", description = "受講生詳細情報 (一覧・削除済みを除く) の取得に成功しました")})
 
   @GetMapping("/students")
   public List<StudentDetail> getStudents() {
@@ -71,9 +72,11 @@ public class StudentController {
    * @param studentId 受講生ID
    * @return 指定したIDの受講生詳細情報 (受講生情報と受講生コース情報を結合したもの)
    */
-  @Operation(summary = "受講生情報【個別取得】", description = "指定した受講生の詳細情報 (受講生情報と受講生コース情報) を取得します")
+  @Operation(summary = "受講生詳細情報【個別取得】",
+      description = "受講生IDをもとに、対象の受講生を特定して、受講生の詳細情報 (受講生情報と受講生コース情報) を取得します。")
+
   @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "受講生情報 (個別) の取得に成功しました"),
+      @ApiResponse(responseCode = "200", description = "受講生詳細情報 (個別) の取得に成功しました"),
       @ApiResponse(responseCode = "404", description = "受講生IDが見つかりません")})
 
   @GetMapping("/students/{studentId}")
@@ -89,6 +92,7 @@ public class StudentController {
    * @throws TestException 確認用に発生させる例外
    */
   @Operation(summary = "例外処理の動作確認用", description = "例外処理が正しく行われるかを確認します")
+
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "例外処理の動作確認に成功しました")})
 
@@ -104,9 +108,12 @@ public class StudentController {
    * @param studentDetail 登録対象の受講生詳細情報 (受講生情報と受講生コース情報)
    * @return 登録処理の結果メッセージ
    */
-  @Operation(summary = "受講生情報【登録】", description = "受講生の詳細情報 (受講生情報と受講生コース情報) を登録します")
+  @Operation(summary = "受講生詳細情報【登録】", description = "受講生の詳細情報 (受講生情報と受講生コース情報) を登録します")
+
   @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "受講生情報の登録に成功しました")})
+      @ApiResponse(responseCode = "200", description = "受講生詳細情報の登録に成功しました"),
+      @ApiResponse(responseCode = "400", description = "入力値が不正です"),
+      @ApiResponse(responseCode = "404", description = "コース名が見つかりません")})
 
   @PostMapping("/students")
   public ResponseEntity<String> registerStudents(@RequestBody @Valid StudentDetail studentDetail) {
@@ -123,9 +130,12 @@ public class StudentController {
    * @param studentDetail 更新対象の受講生詳細情報 (受講生情報と受講生コース情報)
    * @return 更新処理の結果メッセージ
    */
-  @Operation(summary = "受講生情報【更新】", description = "受講生の詳細情報 (受講生情報と受講生コース情報) を更新します")
+  @Operation(summary = "受講生詳細情報【更新】",
+      description = "受講生の詳細情報 (受講生情報と受講生コース情報) を更新します。リクエストボディに含まれる受講生IDをもとに、対象の受講生を特定して更新します。")
+
   @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "受講生情報の更新に成功しました")})
+      @ApiResponse(responseCode = "200", description = "対象の受講生詳細情報の更新に成功しました"),
+      @ApiResponse(responseCode = "404", description = "受講生IDまたはコース名が見つかりません")})
 
   @PutMapping("/students")
   public ResponseEntity<String> updateStudentDetail(@RequestBody StudentDetail studentDetail) {
@@ -144,7 +154,9 @@ public class StudentController {
    * @param courseName コース名
    * @return 受講生コース情報一覧
    */
-  @Operation(summary = "受講生コース情報【一覧取得】", description = "受講生コース情報の一覧を取得します")
+  @Operation(summary = "受講生コース情報【一覧取得 (コース名指定可）】",
+      description = "受講生コース情報の一覧を取得します。コース名を指定することで、該当するコースのみ取得可能です。受講生の論理削除状態に関係なく、すべての受講生のコース情報を取得します。")
+
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "受講生コース情報 (一覧) の取得に成功しました")})
 
@@ -165,9 +177,10 @@ public class StudentController {
    *
    * @return 受講生詳細情報のリスト（受講生情報と受講生コース情報を結合したもの）
    */
-  @Operation(summary = "受講生情報【一覧取得 (削除済みを含む) 】", description = "削除済みを含めた、受講生の詳細情報 (受講生情報と受講生コース情報) の一覧を取得します")
+  @Operation(summary = "受講生詳細情報【一覧取得 (削除済みを含む) 】", description = "受講生の詳細情報 (受講生情報と受講生コース情報) の一覧を取得します。論理削除されている受講生の情報を含めます。")
+
   @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "受講生情報 (一覧・削除済みを含む) の取得に成功しました")})
+      @ApiResponse(responseCode = "200", description = "受講生詳細情報 (一覧・削除済みを含む) の取得に成功しました")})
 
   @GetMapping("/students/details")
   @ResponseBody
