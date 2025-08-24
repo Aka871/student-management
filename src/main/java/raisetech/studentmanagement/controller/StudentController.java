@@ -138,7 +138,8 @@ public class StudentController {
       @ApiResponse(responseCode = "404", description = "受講生IDまたはコース名が見つかりません")})
 
   @PutMapping("/students")
-  public ResponseEntity<String> updateStudentDetail(@RequestBody StudentDetail studentDetail) {
+  public ResponseEntity<String> updateStudentDetail(
+      @RequestBody @Valid StudentDetail studentDetail) {
     service.updateStudentDetail(studentDetail);
 
     return ResponseEntity.ok("更新処理が成功しました！");
