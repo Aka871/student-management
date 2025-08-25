@@ -87,6 +87,54 @@ public class StudentController {
   }
 
   /**
+   * 受講生コース情報一覧を取得します。
+   * 対象は、すべての受講生 (論理削除されている受講生を含む) です。
+   * <p>
+   * コース名を指定した場合、該当するコースのみを取得します。
+   * コース名が未指定の場合は、すべての受講生コース情報を取得します。
+   *
+   * @param courseName コース名
+   * @return 受講生コース情報一覧
+   */
+  @Operation(summary = "受講生コース情報【一覧取得 (コース名指定可）】",
+      description = "受講生コース情報の一覧を取得します。コース名を指定することで、該当するコースのみ取得可能です。受講生の論理削除状態に関係なく、すべての受講生のコース情報を取得します。")
+
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "受講生コース情報 (一覧) の取得に成功しました")})
+
+  @GetMapping("/courses")
+  @ResponseBody
+  public List<StudentCourse> getCourses(
+
+      @RequestParam(required = false) String courseName) {
+    return service.getCourses(courseName);
+  }
+
+  /**
+   * 受講生詳細情報一覧を取得します。
+   * 受講生情報と受講生コース情報を合わせたものを取得します。
+   * 対象は、すべての受講生 (論理削除されている受講生を含む) です。
+   * <p>
+   * 論理削除されていない受講生のみを取得したい場合は /students エンドポイントを使用してください。
+   *
+   * @return 受講生詳細情報のリスト（受講生情報と受講生コース情報を結合したもの）
+   */
+  @Operation(summary = "受講生詳細情報【一覧取得 (削除済みを含む) 】", description = "受講生の詳細情報 (受講生情報と受講生コース情報) の一覧を取得します。論理削除されている受講生の情報を含めます。")
+
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "受講生詳細情報 (一覧・削除済みを含む) の取得に成功しました")})
+
+  @GetMapping("/students/details")
+  @ResponseBody
+  public List<StudentDetail> searchStudents() {
+
+    List<Student> students = service.getStudents(null, null);
+    List<StudentCourse> studentCourses = service.getCourses(null);
+
+    return converter.convertStudentDetails(students, studentCourses);
+  }
+
+  /**
    * 例外処理が正しく行われるかを確認します。
    *
    * @throws TestException 確認用に発生させる例外
@@ -143,53 +191,5 @@ public class StudentController {
     service.updateStudentDetail(studentDetail);
 
     return ResponseEntity.ok("更新処理が成功しました！");
-  }
-
-  /**
-   * 受講生コース情報一覧を取得します。
-   * 対象は、すべての受講生 (論理削除されている受講生を含む) です。
-   * <p>
-   * コース名を指定した場合、該当するコースのみを取得します。
-   * コース名が未指定の場合は、すべての受講生コース情報を取得します。
-   *
-   * @param courseName コース名
-   * @return 受講生コース情報一覧
-   */
-  @Operation(summary = "受講生コース情報【一覧取得 (コース名指定可）】",
-      description = "受講生コース情報の一覧を取得します。コース名を指定することで、該当するコースのみ取得可能です。受講生の論理削除状態に関係なく、すべての受講生のコース情報を取得します。")
-
-  @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "受講生コース情報 (一覧) の取得に成功しました")})
-
-  @GetMapping("/courses")
-  @ResponseBody
-  public List<StudentCourse> getCourses(
-
-      @RequestParam(required = false) String courseName) {
-    return service.getCourses(courseName);
-  }
-
-  /**
-   * 受講生詳細情報一覧を取得します。
-   * 受講生情報と受講生コース情報を合わせたものを取得します。
-   * 対象は、すべての受講生 (論理削除されている受講生を含む) です。
-   * <p>
-   * 論理削除されていない受講生のみを取得したい場合は /students エンドポイントを使用してください。
-   *
-   * @return 受講生詳細情報のリスト（受講生情報と受講生コース情報を結合したもの）
-   */
-  @Operation(summary = "受講生詳細情報【一覧取得 (削除済みを含む) 】", description = "受講生の詳細情報 (受講生情報と受講生コース情報) の一覧を取得します。論理削除されている受講生の情報を含めます。")
-
-  @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "受講生詳細情報 (一覧・削除済みを含む) の取得に成功しました")})
-
-  @GetMapping("/students/details")
-  @ResponseBody
-  public List<StudentDetail> searchStudents() {
-
-    List<Student> students = service.getStudents(null, null);
-    List<StudentCourse> studentCourses = service.getCourses(null);
-
-    return converter.convertStudentDetails(students, studentCourses);
   }
 }
