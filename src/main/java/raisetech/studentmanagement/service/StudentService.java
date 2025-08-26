@@ -90,9 +90,8 @@ public class StudentService {
    * <p>
    * コース名が未指定（nullまたは空文字）の場合、すべての受講生コース情報を返します。
    *
-   * @param courseName コース名
-   * @return 指定したコース名の受講生コース情報
-   * ただし、コース名が未指定（nullまたは空文字）の場合は、すべての受講生コース情報を返す。
+   * @param courseName コース名 (nullまたは空文字の場合は、すべての受講生コース情報が対象)
+   * @return 指定したコース名の受講生コース情報のリスト
    */
   public List<StudentCourse> getCourses(String courseName) {
     List<StudentCourse> allCourses = repository.searchCourses();
@@ -107,7 +106,7 @@ public class StudentService {
   }
 
   /**
-   * 受講生詳細情報を新規登録します。
+   * 受講生詳細情報を登録します。
    * 受講生情報と受講生コース情報をそれぞれ登録します。
    * <p>
    * UUIDを受講生IDとして付与し、コース情報と関連付けてデータベースに保存します。<br>
@@ -232,9 +231,18 @@ public class StudentService {
     }
   }
 
-  // TODO: 現在は未使用です。
-  //  今後、仕様が固まった段階で、削除または修正することを検討します。
-  //   @GetMapping("/students/details")を削除する場合は、一緒にこのメソッドも削除する予定です。
+  /**
+   * 受講生情報を取得します。
+   * 対象は、すべての受講生 (論理削除されている受講生を含む) の中で、指定した範囲の年齢に該当する受講生です。
+   * <p>
+   * 下限もしくは上限の年齢がnullの場合は、nullは無視し、指定された範囲のみで絞り込みを行います。
+   * 例えば、下限がnullで上限が30の場合、30歳以下の受講生情報を返します。
+   * また、年齢の下限と上限の両方がnullの場合は、すべての受講生情報を返します。
+   *
+   * @param minAge 年齢の下限（nullの場合は下限なし）
+   * @param maxAge 年齢の上限（nullの場合は上限なし）
+   * @return 指定した範囲の年齢に該当する受講生情報のリスト (論理削除されている受講生を含む)
+   */
   public List<Student> getStudents(Integer minAge, Integer maxAge) {
     List<Student> allStudents = repository.searchStudents();
     return allStudents.stream()

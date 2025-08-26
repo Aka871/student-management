@@ -17,33 +17,33 @@ public interface StudentRepository {
   /**
    * 受講生情報を全件取得します。
    *
-   * @return 受講生情報一覧(全件)
+   * @return 受講生情報のリスト(全件)
    */
   List<Student> searchStudents();
 
   /**
    * 受講生情報を取得します。
-   * 受講生IDに紐づく任意の受講生情報を取得します。
+   * 指定した受講生IDに紐づく受講生情報を取得します。
    * <p>
    * データが存在しない場合は、Optional.empty() を返します。
    * Optionalを使うことで、呼び出し側が「値が存在しない場合」の処理を明確に記述することができ、nullチェックの必要がなくなります。
    *
    * @param studentId 受講生ID
-   * @return 受講生IDに紐づく受講生情報 (存在しない場合は、Optional.empty ())
+   * @return 指定した受講生IDに紐づく受講生情報 (存在しない場合は、Optional.empty ())
    */
   Optional<Student> findById(String studentId);
 
   /**
    * 受講生コース情報を取得します。
-   * 受講生IDに紐づく任意の受講生コース情報を取得します。
+   * 指定した受講生IDに紐づく受講生コース情報を取得します。
    *
    * @param studentId 受講生ID
-   * @return 受講生IDに紐づく受講生コース情報
+   * @return 指定した受講生IDに紐づく受講生コース情報
    */
   List<StudentCourse> findCourseById(String studentId);
 
   /**
-   * 受講生情報を新規登録します。(受講生情報テーブル)
+   * 受講生情報を登録します。(受講生情報テーブル)
    * 受講生IDはUUIDで設定します。
    *
    * @param student 受講生情報
@@ -51,7 +51,7 @@ public interface StudentRepository {
   void saveStudent(Student student);
 
   /**
-   * 受講生コース情報を新規登録します。(受講生コース情報テーブル)
+   * 受講生コース情報を登録します。(受講生コース情報テーブル)
    * 受講生IDはUUIDで設定します。
    *
    * @param studentCourse 受講生コース情報
@@ -73,8 +73,10 @@ public interface StudentRepository {
   // 特定の受講生の特定のコースだけを更新したい場合、WHERE句には、studentIdとcourseIdの両方を指定する必要がある
   void updateStudentCourse(StudentCourse studentCourse);
 
-  // TODO: 現在は未使用です。
-  //  今後、仕様が固まった段階で、削除または修正することを検討します。
-  //   @GetMapping("/students/details")を削除する場合は、一緒にこのメソッドも削除する予定です。
+  /**
+   * 受講生コース情報を全件取得します。
+   *
+   * @return 受講生コース情報のリスト(全件)
+   */
   List<StudentCourse> searchCourses();
 }
