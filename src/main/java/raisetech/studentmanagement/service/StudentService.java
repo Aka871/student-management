@@ -34,9 +34,9 @@ public class StudentService {
 
   /**
    * 受講生情報の一覧を取得します。
-   * 対象は、論理削除されていない受講生のみです。
+   * 論理削除済みの受講生を除きます。
    *
-   * @return 論理削除されていない受講生情報のリスト
+   * @return 受講生情報のリスト (論理削除済みの受講生を除く)
    */
   public List<Student> getNotDeletedStudents() {
     List<Student> allStudents = repository.searchStudents();
@@ -49,9 +49,9 @@ public class StudentService {
   /**
    * 受講生詳細情報の一覧を取得します。
    * 受講生情報と受講生コース情報を合わせたものを取得します。
-   * 対象は、論理削除されていない受講生のみです。
+   * 論理削除済みの受講生を除きます。
    *
-   * @return 論理削除されていない受講生詳細情報のリスト（受講生情報と受講生コース情報を結合したもの）
+   * @return 受講生詳細情報のリスト（受講生情報と受講生コース情報を結合したもの。論理削除済みの受講生を除く）
    */
   public List<StudentDetail> getNotDeletedStudentsDetails() {
     List<Student> students = getNotDeletedStudents();
@@ -65,11 +65,11 @@ public class StudentService {
   /**
    * 受講生詳細情報(個別)を取得します。
    * 受講生情報と受講生コース情報を合わせたものを取得します。
-   * 対象は、指定した受講生IDに紐づく、受講生詳細情報です。
+   * 対象は、指定した受講生IDに紐づく、受講生詳細情報です。論理削除済みの受講生を含みます。
    * <p>
    *
    * @param studentId 受講生ID
-   * @return 指定したIDの受講生詳細情報（受講生情報と受講生コース情報を結合したもの）
+   * @return 指定したIDの受講生詳細情報（受講生情報と受講生コース情報を結合したもの。論理削除済みの受講生を含む）
    * @throws StudentNotFoundException 指定したIDの受講生が存在しない場合にスロー
    */
   public StudentDetail getStudentDetailById(String studentId) {
@@ -87,11 +87,12 @@ public class StudentService {
   /**
    * 受講生コース情報の一覧を取得します。
    * 対象は、指定したコース名と一致する受講生コース情報です。(大文字小文字の区別はしません。)
+   * 論理削除済みの受講生を含みます。
    * <p>
    * コース名が未指定（nullまたは空文字）の場合、すべての受講生コース情報を返します。
    *
    * @param courseName コース名 (nullまたは空文字の場合は、すべての受講生コース情報が対象)
-   * @return 指定したコース名の受講生コース情報のリスト
+   * @return 受講生コース情報のリスト（コース名を指定した場合は該当コースのみ。論理削除済みの受講生を含む）
    */
   public List<StudentCourse> getCourses(String courseName) {
     List<StudentCourse> allCourses = repository.searchCourses();
@@ -163,9 +164,11 @@ public class StudentService {
   /**
    * 受講生詳細情報を更新します。
    * 受講生情報と受講生コース情報をそれぞれ更新します。
-   * キャンセルフラグの更新もここで行います。(論理削除)
+   * 論理削除状態 (削除済みフラグ) の更新もここで行います。
    * <p>
-   * 受講生IDに紐づいている受講生の情報を取得し、該当する更新対象のコースIDと一致するものを探します。
+   * リクエストボディに含まれる受講生IDとコース名をもとに対象を特定し、更新を行います。
+   * 対象となる受講生コース情報の特定は、受講生IDに紐づくコース情報の中から、コース名に対応するコースIDを取得し、
+   * そのコースIDと一致するものを検索することで行います。<br>
    * 該当コースが存在する場合は更新、存在しない場合は新規登録を行います。
    * <p>
    * 受講生情報と受講生コース情報を関連付けるため、受講生情報の受講生IDを、受講生コース情報の受講生IDに紐付けます。<br>
@@ -233,7 +236,7 @@ public class StudentService {
 
   /**
    * 受講生情報を取得します。
-   * 対象は、すべての受講生 (論理削除されている受講生を含む) の中で、指定した範囲の年齢に該当する受講生です。
+   * 対象は、すべての受講生 (論理削除済みの受講生を含む) の中で、指定した範囲の年齢に該当する受講生です。
    * <p>
    * 下限もしくは上限の年齢がnullの場合は、nullは無視し、指定された範囲のみで絞り込みを行います。
    * 例えば、下限がnullで上限が30の場合、30歳以下の受講生情報を返します。
@@ -241,7 +244,7 @@ public class StudentService {
    *
    * @param minAge 年齢の下限（nullの場合は下限なし）
    * @param maxAge 年齢の上限（nullの場合は上限なし）
-   * @return 指定した範囲の年齢に該当する受講生情報のリスト (論理削除されている受講生を含む)
+   * @return 指定した範囲の年齢に該当する受講生情報のリスト (論理削除済みの受講生を含む)
    */
   public List<Student> getStudents(Integer minAge, Integer maxAge) {
     List<Student> allStudents = repository.searchStudents();
