@@ -34,6 +34,13 @@ public interface StudentRepository {
   Optional<Student> findById(String studentId);
 
   /**
+   * 受講生コース情報を全件取得します。
+   *
+   * @return 受講生コース情報のリスト(全件)
+   */
+  List<StudentCourse> searchCourses();
+
+  /**
    * 受講生コース情報を取得します。
    * 指定した受講生IDに紐づく受講生コース情報を取得します。
    *
@@ -72,11 +79,4 @@ public interface StudentRepository {
    */
   // 特定の受講生の特定のコースだけを更新したい場合、WHERE句には、studentIdとcourseIdの両方を指定する必要がある
   void updateStudentCourse(StudentCourse studentCourse);
-
-  /**
-   * 受講生コース情報を全件取得します。
-   *
-   * @return 受講生コース情報のリスト(全件)
-   */
-  List<StudentCourse> searchCourses();
 }

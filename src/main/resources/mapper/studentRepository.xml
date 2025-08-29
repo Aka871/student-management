@@ -13,6 +13,11 @@
     SELECT *, isDeleted AS deleted FROM students WHERE student_id = #{studentId}
   </select>
 
+  <!-- 受講生コース情報を全件取得します -->
+  <select id="searchCourses" resultType="raisetech.studentmanagement.data.StudentCourse">
+    SELECT * FROM students_courses
+  </select>
+
   <!-- 指定した受講生IDに紐づく受講生コース情報を取得します -->
   <select id="findCourseById" parameterType="raisetech.studentmanagement.data.StudentCourse">
     SELECT * FROM students_courses WHERE student_id = #{studentId}
@@ -77,10 +82,5 @@
     WHERE student_id = #{studentId}
     AND course_id = #{courseId}
   </update>
-
-  <!-- 受講生コース情報を全件取得します -->
-  <select id="searchCourses" resultType="raisetech.studentmanagement.data.StudentCourse">
-    SELECT * FROM students_courses
-  </select>
-
+  
 </mapper>
