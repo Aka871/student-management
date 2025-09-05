@@ -8,17 +8,22 @@
     SELECT *, isDeleted AS deleted FROM students
   </select>
 
-  <!-- 受講生IDで個別の受講生情報を取得します -->
+  <!-- 指定した受講生IDに紐づく受講生情報を取得します -->
   <select id="findById" resultType="raisetech.studentmanagement.data.Student">
     SELECT *, isDeleted AS deleted FROM students WHERE student_id = #{studentId}
   </select>
 
-  <!-- 受講生IDに紐づく受講生コース情報を取得します -->
+  <!-- 受講生コース情報を全件取得します -->
+  <select id="searchCourses" resultType="raisetech.studentmanagement.data.StudentCourse">
+    SELECT * FROM students_courses
+  </select>
+
+  <!-- 指定した受講生IDに紐づく受講生コース情報を取得します -->
   <select id="findCourseById" parameterType="raisetech.studentmanagement.data.StudentCourse">
     SELECT * FROM students_courses WHERE student_id = #{studentId}
   </select>
 
-  <!-- 受講生情報を新規登録します
+  <!-- 受講生情報を登録します
    student_idはUUID()で自動生成されるように設定します
    #{}の部分は、メソッド引数のStudentオブジェクトのフィールド値を対応する場所に埋め込むことを意味します
    MySQLのstudentsテーブルの各列に、Studentオブジェクトの各フィールドの値を挿入しています
@@ -35,7 +40,7 @@
     )
   </insert>
 
-  <!-- 受講生コース情報を新規登録します -->
+  <!-- 受講生コース情報を登録します -->
   <insert id="saveStudentCourse" parameterType="raisetech.studentmanagement.data.StudentCourse">
     INSERT INTO students_courses (
     course_id, student_id, course_name, course_start_date, course_expected_end_date
@@ -77,13 +82,5 @@
     WHERE student_id = #{studentId}
     AND course_id = #{courseId}
   </update>
-
-  <!--
-  すべての受講生コース情報を取得します
-  TODO: 現在は未使用です。今後、仕様が固まった段階で、削除または修正することを検討します。@GetMapping("/students/details")を削除する場合は、一緒にこのSQLも削除する予定です。
-  -->
-  <select id="searchCourses" resultType="raisetech.studentmanagement.data.StudentCourse">
-    SELECT * FROM students_courses
-  </select>
-
+  
 </mapper>
