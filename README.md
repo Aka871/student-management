@@ -63,9 +63,75 @@ Java / Spring Boot / MyBatis / MySQL などの学習成果を形にするため�
 現時点では未デプロイです。
 (将来的には、AWSを活用し、アプリケーションを公開することも検討しています)
 
-## スクリーンショット・GIF
+## スクリーンショット・動画
 
-Swagger UIや実行結果の画像を貼る予定
+### Swagger UIによるAPI仕様書 (スクリーンショット)
+
+<details>
+  <summary>一覧画面</summary>
+<img width="1602" height="871" alt="スクリーンショット 2025-09-25 161339" src="https://github.com/user-attachments/assets/3893edde-b4df-4a83-89b0-0119b77e4e76" />
+<img width="1522" height="368" alt="スクリーンショット 2025-09-25 161353" src="https://github.com/user-attachments/assets/04d41679-fcb7-4377-8ac2-b786264dfa63" />
+</details>
+
+<details>
+  <summary>登録</summary>
+<img width="1693" height="285" alt="スクリーンショット 2025-09-25 164517" src="https://github.com/user-attachments/assets/b259dcc3-4aad-407f-99de-3653117d5a01" />
+<img width="1700" height="588" alt="スクリーンショット 2025-09-25 164545" src="https://github.com/user-attachments/assets/9da4516e-ec58-4e35-8314-e82a1f9cdf70" />
+<img width="1697" height="672" alt="スクリーンショット 2025-09-25 164559" src="https://github.com/user-attachments/assets/96654955-4b40-4894-a6f7-1115214f9a61" />
+<img width="1686" height="271" alt="スクリーンショット 2025-09-25 164611" src="https://github.com/user-attachments/assets/0c06637b-c74a-4139-bc01-c726c78f0fdb" />
+</details>
+
+<details>
+  <summary>取得</summary>
+<img width="1698" height="414" alt="スクリーンショット 2025-09-25 161609" src="https://github.com/user-attachments/assets/dfa9d81b-ff84-4f49-9e11-07af0e46fd98" />
+<img width="1703" height="821" alt="スクリーンショット 2025-09-25 161625" src="https://github.com/user-attachments/assets/eba6c1f7-f7fe-48eb-8dfc-08ea865b928a" />
+<img width="1706" height="455" alt="スクリーンショット 2025-09-25 161715" src="https://github.com/user-attachments/assets/8c73ec8a-ad71-4312-9a43-6e0c21ee9d11" />
+<img width="1716" height="787" alt="スクリーンショット 2025-09-25 161725" src="https://github.com/user-attachments/assets/cc772a11-64d7-4785-960b-6ea1f44ee45b" />
+<img width="1680" height="634" alt="スクリーンショット 2025-09-25 161756" src="https://github.com/user-attachments/assets/a87a73d8-0782-428b-8b65-fbe09d772f01" />
+<img width="1689" height="353" alt="スクリーンショット 2025-09-25 161810" src="https://github.com/user-attachments/assets/f9757cd6-29d3-4dbd-8a99-83c68b732b66" />
+<img width="1712" height="807" alt="スクリーンショット 2025-09-25 161827" src="https://github.com/user-attachments/assets/866a1a2c-cf78-4201-9bfd-76ece2fc5b9f" />
+<img width="1711" height="770" alt="スクリーンショット 2025-09-25 161839" src="https://github.com/user-attachments/assets/bb288ca4-18f2-45dd-9dd0-56d5704b6297" />
+<img width="1700" height="449" alt="スクリーンショット 2025-09-25 161854" src="https://github.com/user-attachments/assets/5f331b61-a993-4f73-a25e-bb1f9e73c22e" />
+<img width="1707" height="555" alt="スクリーンショット 2025-09-25 161904" src="https://github.com/user-attachments/assets/fa2ca216-63c5-4893-a4a7-55ef81a429e6" />
+</details>
+
+<details>
+  <summary>更新</summary>
+<img width="1680" height="854" alt="スクリーンショット 2025-09-25 164624" src="https://github.com/user-attachments/assets/9109349d-33da-4237-9a88-acfe93a12a98" />
+<img width="1688" height="696" alt="スクリーンショット 2025-09-25 164637" src="https://github.com/user-attachments/assets/6bafadb3-bbdf-4a56-9bdf-0656c0ea63cb" />
+</details>
+
+<details>
+  <summary>Schemas</summary>
+<img width="697" height="628" alt="スクリーンショット 2025-09-25 161929" src="https://github.com/user-attachments/assets/90e553e8-b432-46e1-9fcf-272fd92819b5" />
+<img width="527" height="282" alt="スクリーンショット 2025-09-25 161957" src="https://github.com/user-attachments/assets/ecb3dce6-b0b9-4bd8-b3a7-2724d71b1cee" />
+<img width="853" height="822" alt="スクリーンショット 2025-09-25 162025" src="https://github.com/user-attachments/assets/6280fdce-ffa7-42e7-84fd-81ae6c84da1e" />
+</details>
+
+### Postmanによる動作確認 (動画)
+
+<details>
+  <summary>動画を表示する</summary>
+
+- **① 受講生詳細情報【登録】**  
+  `POST /students`  ([動画](https://github.com/user-attachments/assets/06977d31-7f46-44a7-855b-f33783d78c70))
+
+  → 受講生詳細情報（受講生情報＋受講生コース情報）を登録する処理です。
+
+
+- **② 受講生詳細情報【一覧取得】（論理削除済みの受講生を除く）**  
+  `GET /students`  ([動画](https://github.com/user-attachments/assets/8929c375-3c77-41c1-b3d2-aad105c8d77c))
+
+  → 受講生詳細情報の一覧を取得します。論理削除済みの受講生は除きます。
+
+
+- **③ 受講生詳細情報【更新（存在しないID指定時）】**  
+  `PUT /students`  ([動画](https://github.com/user-attachments/assets/9e817511-d906-49e6-ad81-8f0f1d6668fd))
+
+  → 存在しない受講生IDを指定した場合、404 エラーと以下のメッセージが返されます。  
+  エラーメッセージ：`受講生ID: ◯◯ が見つかりません`
+
+</details>
 
 ## ER図（Mermaid形式）
 
