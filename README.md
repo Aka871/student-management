@@ -56,7 +56,327 @@ Java / Spring Boot / MyBatis / MySQL などの学習成果を形にするため�
 
 ## セットアップ手順（How to Run）
 
-詳細は後日追記します
+<details>
+  <summary>手順を表示する</summary>
+
+本アプリケーションはローカル環境での実行を前提としています。  
+GitHub 上のリポジトリをローカル環境にクローンし、IDEやGitを使用してアプリケーションを動かします。
+以下の手順に沿ってセットアップしてください。
+
+
+---
+
+### 1. 事前準備（必要な環境）
+
+以下がインストールされていることを確認してください。
+
+- **Java**: 21（本アプリは Java 21 で動作確認済）
+- **MySQL**: 8.0.x（8.0.39 で動作確認済）
+- **IDE**: IntelliJ IDEA（推奨）
+- **Git**: 任意（GitHubからcloneする場合）
+
+※ Spring Boot は build.gradle に含まれているため、別途インストールする必要はありません。
+（Gradle が自動的に必要なライブラリをダウンロードします）
+
+※ Git を使用する場合は、コマンドライン操作を行います。
+ターミナル（例：Windows の Git Bash、Mac の Terminal など）を使用してください。
+
+
+---
+
+### 2. リポジトリの取得
+
+#### Git を使用する場合
+
+ターミナル（コマンドライン）を開き、任意の場所に移動してから、クローンコマンドを実行してください。  
+以下は、デスクトップに保存する場合の例です。
+
+**デスクトップに移動**
+
+```bash
+# Windows（Git Bash）の場合
+cd /c/Users/あなたのユーザー名/Desktop
+
+# Mac/Linux の場合
+cd ~/Desktop
+```
+
+※現在の場所を確認するには、`pwd`（Mac/Linux/Git Bash）や `cd`（Windows コマンドプロンプト）を実行してみてください。
+
+**GitHub からクローン**
+
+```bash
+git clone https://github.com/Aka871/student-management.git
+cd student-management
+```
+
+※ `student-management` というフォルダ名は、  
+GitHub のリポジトリ名（URLの末尾）と同じ名前で作成されます。
+
+#### Git を使用しない場合
+
+1. GitHub の「Code」→「Download ZIP」からダウンロード
+2. ZIP を解凍し、IDE でフォルダを開く
+
+---
+
+### 3. MySQL の設定
+
+#### 3.1 MySQL にログイン
+
+ターミナル（コマンドライン）を開き、以下のコマンドを実行して MySQL にログインします。
+> Git 操作用に使っているターミナルはそのままにしておき、**新しくターミナル（コマンドライン）をもうひとつ開いて操作する
+**のがおすすめです。
+
+```bash
+mysql -u ユーザー名 -p
+```
+
+- 例：`mysql -u root -p`
+- ユーザー名はご自身の MySQL 環境に合わせて変更してください（デフォルトは `root`）
+- 実行後、MySQL のパスワードを入力してください
+
+**Windows の Git Bash で上記コマンドが動作しない場合**
+
+以下のように `winpty` をつけて実行してください。
+
+```bash
+winpty mysql -u ユーザー名 -p
+```
+
+#### 3.2 データベースの作成
+
+```sql
+CREATE
+DATABASE studentmanagement;
+USE
+studentmanagement;
+```
+
+> **Note**  
+> データベース名 `studentmanagement` は `application.properties` の設定と一致させる必要があります。
+> アプリはこの設定をもとに接続先のデータベースを探すため 、MySQL 側でも同じ名前のデータベースを作成してください。
+
+#### 3.3 テーブルの作成
+
+**students テーブル**
+
+```sql
+CREATE TABLE students
+(
+    student_id        VARCHAR(36)  NOT NULL,
+    full_name         VARCHAR(100) NOT NULL,
+    furigana_name     VARCHAR(100) NOT NULL,
+    nick_name         VARCHAR(50)  NOT NULL,
+    phone_number      VARCHAR(20)  NOT NULL,
+    mail_address      VARCHAR(100) NOT NULL,
+    municipality_name VARCHAR(50)  NOT NULL,
+    age               INT          NOT NULL,
+    sex               ENUM('male', 'female', 'non-binary', 'other', 'prefer not to say') NOT NULL,
+    occupation        VARCHAR(50)  NOT NULL,
+    remark            VARCHAR(255),
+    isDeleted         TINYINT(1) NOT NULL DEFAULT 0,
+    PRIMARY KEY (student_id),
+    UNIQUE KEY mail_address (mail_address)
+);
+```
+
+※ `remark` カラムは `NOT NULL` を指定していないため、
+明示的に書かなくても MySQL の仕様上 `DEFAULT NULL` として作成されます。
+
+**students_courses テーブル**
+
+```sql
+CREATE TABLE students_courses
+(
+    course_id                VARCHAR(36)  NOT NULL,
+    student_id               VARCHAR(36)  NOT NULL,
+    course_name              VARCHAR(100) NOT NULL,
+    course_start_date        DATE         NOT NULL,
+    course_expected_end_date DATE         NOT NULL,
+    KEY                      student_id (student_id),
+    FOREIGN KEY (student_id) REFERENCES students (student_id)
+);
+```
+
+####
+
+3.4 初期データの投入
+（動作確認用）
+
+> **Note**  
+> 初期データは動作確認用のサンプルです。UUID は説明用に固定値を使用しています。  
+> 実際のアプリケーション実行時には、UUID は自動生成されます。
+> また、、`students_courses` テーブルは**1人の受講生が複数のコースを受講できる設計**になっています。
+> そのため 、1人の受講生に対して複数のコースが紐づくような初期データを用意しています。
+
+**students テーブルのデータ**
+
+```sql
+INSERT INTO students (student_id, full_name, furigana_name, nick_name, phone_number, mail_address,
+                      municipality_name, age, sex, occupation, remark, isDeleted)
+VALUES ('11111111-1111-1111-1111-111111111111',
+        '山田 太郎', 'やまだ たろう', 'たろちゃん', '090-1234-5678',
+        'taro@example.com', '東京都渋谷区', 25, 'male', '会社員',
+        '早めの転職希望', false),
+       ('22222222-2222-2222-2222-222222222222',
+        '佐藤 花子', 'さとう はなこ', 'hana', '080-9876-5432',
+        'hanako@example.com', '大阪市北区', 50, 'female', 'フリーランス',
+        'Webマーケティングコースにも興味あり', true);
+```
+
+**students_courses テーブルのデータ**
+
+```sql
+INSERT INTO students_courses (course_id, student_id, course_name, course_start_date,
+                              course_expected_end_date)
+VALUES ('A001',
+        '11111111-1111-1111-1111-111111111111',
+        'Javaフルコース',
+        '2025-01-01',
+        '2026-01-01'),
+       ('A003',
+        '11111111-1111-1111-1111-111111111111',
+        'WordPress副業コース',
+        '2025-06-15',
+        '2025-12-15'),
+       ('A004',
+        '22222222-2222-2222-2222-222222222222',
+        'デザインコース',
+        '2024-04-01',
+        '2025-04-01');
+```
+
+---
+
+### 4. アプリケーション設定の確認
+
+アプリケーションを起動する前に、`src/main/resources/application.properties` を開き、
+ご自身の MySQL 環境と接続設定が合っているかを確認してください。
+※ IntelliJ IDEA、VS Code、メモ帳など、任意のテキストエディタで開くことができます。
+
+```properties
+spring.datasource.url=jdbc:mysql://localhost:3306/studentmanagement
+spring.datasource.username=root
+spring.datasource.password=your_password
+```
+
+※`username` や `password` は、ご自身のMySQL環境に合わせて変更してください。
+
+**設定項目の説明**
+
+| 項目                  | 説明                               |
+|---------------------|----------------------------------|
+| `localhost`         | MySQL が動いている場所                   |
+| `3306`              | MySQL のポート番号（デフォルト）              |
+| `studentmanagement` | 作成したデータベース名                      |
+| `username`          | ご自身の MySQL ユーザー名（※デフォルトは `root`） |
+| `password`          | ご自身の MySQL パスワード                 |
+
+**ポート番号の確認方法**
+MySQL のポート番号が `3306` であることを確認してください。  
+`application.properties` の設定と一致している必要があります。
+
+確認するには、MySQL にログインして以下のコマンドを実行してください。
+
+```sql
+SHOW
+VARIABLES LIKE 'port';
+```
+
+---
+
+### 5. アプリケーションの起動
+
+#### IntelliJ IDEA を使用する場合
+
+1. クローンしたリポジトリを IntelliJ IDEA で開きます
+2. 以下のファイルを探します：
+
+```
+   src/main/java/raisetech/studentmanagement/StudentManagementApplication.java
+```
+
+3. このファイルを右クリックし、表示されるメニューから  
+   **Run 'StudentManagementApplication.main()'**（緑色の三角マーク ▶ 付き）を選択します
+
+4. コンソール（下部のターミナル画面）に以下のようなログが表示されれば、アプリケーションは正常に起動しています：
+
+```
+   Started StudentManagementApplication in ...
+```
+
+---
+
+#### コマンドラインを使用する場合
+
+**現在の場所の確認**
+ターミナルで、クローンした **`student-management` フォルダにいること** を確認してください。
+
+※現在の場所の確認や、移動がうまくいかない場合は、[「2. リポジトリの取得」の「Git を使用する場合」](#git-を使用する場合)
+を参照してください。
+
+**デスクトップに保存している場合の例**
+`pwd`（Mac/Linux/Git Bash）または `cd`（Windows コマンドプロンプト）を実行すると、以下のように表示されます：
+
+```bash
+# Windows（Git Bash）の場合
+/c/Users/あなたのユーザー名/Desktop/student-management
+
+# Mac/Linux の場合
+/Users/あなたのユーザー名/Desktop/student-management
+```
+
+**アプリケーションの起動**
+
+以下のコマンドを実行してください：
+
+```bash
+# Mac/Linux/Git Bash の場合
+./gradlew bootRun
+
+# Windows コマンドプロンプトの場合
+gradlew.bat bootRun
+```
+
+※ Windows の Git Bash では `./gradlew bootRun` で動作します。万が一動作しない場合は
+`gradlew.bat bootRun` を試してください。
+
+
+---
+
+### 6. 動作確認
+
+#### Swagger UI での確認
+
+ブラウザで以下にアクセスし、API一覧が表示されることを確認してください。
+
+```
+http://localhost:8080/swagger-ui.html
+```
+
+#### Postman での確認
+
+[API設計（エンドポイント一覧）](#api-list)
+に記載している各エンドポイントを実行し、リクエスト・レスポンスが正しく動作することを確認してください。
+
+## API設計（エンドポイント一覧）
+
+**エンドポイントの一例**
+
+- `GET /students` - 受講生詳細情報の一覧取得（論理削除済みを除く）
+
+---
+
+### 7. アプリケーションの停止
+
+- **コマンドライン**: `Ctrl + C` で終了
+- **IntelliJ IDEA**: 画面上部の赤い四角（■）の「停止（Stop）」ボタンをクリック
+
+---
+
+
+</details>
 
 ## デプロイURL（Live Demo）
 
@@ -175,6 +495,8 @@ erDiagram
 後日追記予定です。
 
 ## API設計（エンドポイント一覧）
+
+<a id="api-list"></a>
 
 | HTTPメソッド | URL                   | 処理内容                                  |
 |----------|-----------------------|---------------------------------------|
