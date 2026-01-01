@@ -34,7 +34,7 @@ Java / Spring Boot / MyBatis / MySQL などの学習成果を形にするため�
 - フレームワーク: Spring Boot 3.2.4
 - データベース: MySQL 8.0.39
 - ORマッパー: MyBatis
-- その他: Swagger UI / Postman / IntelliJ / GitHub
+- その他: Swagger UI / Postman / IntelliJ IDEA / GitHub
 
 ## 機能一覧（Features）
 
@@ -57,7 +57,7 @@ Java / Spring Boot / MyBatis / MySQL などの学習成果を形にするため�
 ## セットアップ手順（How to Run）
 
 <details>
-  <summary>手順を表示する</summary>
+  <summary><strong>手順を表示する</strong></summary>
 
 本アプリケーションはローカル環境での実行を前提としています。  
 GitHub 上のリポジトリをローカル環境にクローンし、IDEやGitを使用してアプリケーションを動かします。
@@ -68,6 +68,9 @@ GitHub 上のリポジトリをローカル環境にクローンし、IDEやGit�
 
 ### 1. 事前準備（必要な環境）
 
+<details>
+  <summary><strong>手順を表示する</strong></summary>
+  
 以下がインストールされていることを確認してください。
 
 - **Java**: 21（本アプリは Java 21 で動作確認済）
@@ -81,17 +84,19 @@ GitHub 上のリポジトリをローカル環境にクローンし、IDEやGit�
 ※ Git を使用する場合は、コマンドライン操作を行います。
 ターミナル（例：Windows の Git Bash、Mac の Terminal など）を使用してください。
 
+</details>
 
 ---
 
 ### 2. リポジトリの取得
 
-#### Git を使用する場合
+<a id="git-clone"></a>
+<details>
+  <summary><strong>Git を使用する場合</strong></summary>
 
-ターミナル（コマンドライン）を開き、任意の場所に移動してから、クローンコマンドを実行してください。  
-以下は、デスクトップに保存する場合の例です。
+ターミナル（コマンドライン）を開き、クローンするリポジトリを保存したい任意の場所に移動してから、クローンコマンドを実行してください。  
 
-**デスクトップに移動**
+**1. クローンするリポジトリを保存したい場所に移動 (以下は、デスクトップに移動する場合の例)**
 
 ```bash
 # Windows（Git Bash）の場合
@@ -103,30 +108,36 @@ cd ~/Desktop
 
 ※現在の場所を確認するには、`pwd`（Mac/Linux/Git Bash）や `cd`（Windows コマンドプロンプト）を実行してみてください。
 
-**GitHub からクローン**
+**2. GitHub からクローン**
 
 ```bash
 git clone https://github.com/Aka871/student-management.git
 cd student-management
 ```
 
-※ `student-management` というフォルダ名は、  
-GitHub のリポジトリ名（URLの末尾）と同じ名前で作成されます。
+※ `student-management` というフォルダ名は、GitHub のリポジトリ名（URLの末尾）と同じ名前で作成されます。
 
-#### Git を使用しない場合
+</details>
+
+<details>
+  <summary><strong>Git を使用しない場合</strong></summary>
 
 1. GitHub の「Code」→「Download ZIP」からダウンロード
 2. ZIP を解凍し、IDE でフォルダを開く
+
+</details>
 
 ---
 
 ### 3. MySQL の設定
 
-#### 3.1 MySQL にログイン
+<details>
+  <summary><strong>3.1 MySQL にログイン</strong></summary>
 
 ターミナル（コマンドライン）を開き、以下のコマンドを実行して MySQL にログインします。
-> Git 操作用に使っているターミナルはそのままにしておき、**新しくターミナル（コマンドライン）をもうひとつ開いて操作する
-**のがおすすめです。
+> **Note**  
+> Git 操作用に使っているターミナルはそのままにしておき、新しくターミナル（コマンドライン）をもうひとつ開いて操作する
+のがおすすめです。
 
 ```bash
 mysql -u ユーザー名 -p
@@ -136,7 +147,8 @@ mysql -u ユーザー名 -p
 - ユーザー名はご自身の MySQL 環境に合わせて変更してください（デフォルトは `root`）
 - 実行後、MySQL のパスワードを入力してください
 
-**Windows の Git Bash で上記コマンドが動作しない場合**
+
+**※ Windows の Git Bash で上記コマンドが動作しない場合**
 
 以下のように `winpty` をつけて実行してください。
 
@@ -144,22 +156,26 @@ mysql -u ユーザー名 -p
 winpty mysql -u ユーザー名 -p
 ```
 
-#### 3.2 データベースの作成
+</details>
+
+<details>
+  <summary><strong>3.2 データベースの作成</strong></summary>
 
 ```sql
-CREATE
-DATABASE studentmanagement;
-USE
-studentmanagement;
+CREATE DATABASE studentmanagement;
+USE studentmanagement;
 ```
 
 > **Note**  
 > データベース名 `studentmanagement` は `application.properties` の設定と一致させる必要があります。
 > アプリはこの設定をもとに接続先のデータベースを探すため 、MySQL 側でも同じ名前のデータベースを作成してください。
 
-#### 3.3 テーブルの作成
+</details>
 
-**students テーブル**
+<details>
+  <summary><strong>3.3 テーブルの作成</strong></summary>
+
+**1. students テーブル**
 
 ```sql
 CREATE TABLE students
@@ -184,7 +200,7 @@ CREATE TABLE students
 ※ `remark` カラムは `NOT NULL` を指定していないため、
 明示的に書かなくても MySQL の仕様上 `DEFAULT NULL` として作成されます。
 
-**students_courses テーブル**
+**2. students_courses テーブル**
 
 ```sql
 CREATE TABLE students_courses
@@ -198,11 +214,10 @@ CREATE TABLE students_courses
     FOREIGN KEY (student_id) REFERENCES students (student_id)
 );
 ```
+</details>
 
-####
-
-3.4 初期データの投入
-（動作確認用）
+<details>
+  <summary><strong>3.4 初期データの投入（動作確認用）</strong></summary>
 
 > **Note**  
 > 初期データは動作確認用のサンプルです。UUID は説明用に固定値を使用しています。  
@@ -210,7 +225,7 @@ CREATE TABLE students_courses
 > また、、`students_courses` テーブルは**1人の受講生が複数のコースを受講できる設計**になっています。
 > そのため 、1人の受講生に対して複数のコースが紐づくような初期データを用意しています。
 
-**students テーブルのデータ**
+**1. students テーブルのデータ**
 
 ```sql
 INSERT INTO students (student_id, full_name, furigana_name, nick_name, phone_number, mail_address,
@@ -225,7 +240,7 @@ VALUES ('11111111-1111-1111-1111-111111111111',
         'Webマーケティングコースにも興味あり', true);
 ```
 
-**students_courses テーブルのデータ**
+**2. students_courses テーブルのデータ**
 
 ```sql
 INSERT INTO students_courses (course_id, student_id, course_name, course_start_date,
@@ -247,12 +262,18 @@ VALUES ('A001',
         '2025-04-01');
 ```
 
+</details>
+
 ---
 
 ### 4. アプリケーション設定の確認
 
+<details>
+  <summary><strong>手順を表示する</strong></summary>
+
 アプリケーションを起動する前に、`src/main/resources/application.properties` を開き、
 ご自身の MySQL 環境と接続設定が合っているかを確認してください。
+
 ※ IntelliJ IDEA、VS Code、メモ帳など、任意のテキストエディタで開くことができます。
 
 ```properties
@@ -274,21 +295,24 @@ spring.datasource.password=your_password
 | `password`          | ご自身の MySQL パスワード                 |
 
 **ポート番号の確認方法**
+
 MySQL のポート番号が `3306` であることを確認してください。  
 `application.properties` の設定と一致している必要があります。
 
 確認するには、MySQL にログインして以下のコマンドを実行してください。
 
 ```sql
-SHOW
-VARIABLES LIKE 'port';
+SHOW VARIABLES LIKE 'port';
 ```
+
+</details>
 
 ---
 
 ### 5. アプリケーションの起動
 
-#### IntelliJ IDEA を使用する場合
+<details>
+  <summary><strong>IntelliJ IDEA を使用する場合</strong></summary>
 
 1. クローンしたリポジトリを IntelliJ IDEA で開きます
 2. 以下のファイルを探します：
@@ -306,17 +330,20 @@ VARIABLES LIKE 'port';
    Started StudentManagementApplication in ...
 ```
 
----
+</details>
 
-#### コマンドラインを使用する場合
 
-**現在の場所の確認**
-ターミナルで、クローンした **`student-management` フォルダにいること** を確認してください。
+<details>
+  <summary><strong>コマンドラインを使用する場合</strong></summary>
 
-※現在の場所の確認や、移動がうまくいかない場合は、[「2. リポジトリの取得」の「Git を使用する場合」](#git-を使用する場合)
+**1. 現在の場所の確認**
+
+ターミナルで、クローンした `student-management` フォルダにいることを確認してください。
+
+※現在の場所の確認や、移動がうまくいかない場合は、[「2. リポジトリの取得」の「Git を使用する場合」](#git-clone)
 を参照してください。
 
-**デスクトップに保存している場合の例**
+※デスクトップに保存している場合の例
 `pwd`（Mac/Linux/Git Bash）または `cd`（Windows コマンドプロンプト）を実行すると、以下のように表示されます：
 
 ```bash
@@ -327,7 +354,7 @@ VARIABLES LIKE 'port';
 /Users/あなたのユーザー名/Desktop/student-management
 ```
 
-**アプリケーションの起動**
+**2. アプリケーションの起動**
 
 以下のコマンドを実行してください：
 
@@ -342,12 +369,14 @@ gradlew.bat bootRun
 ※ Windows の Git Bash では `./gradlew bootRun` で動作します。万が一動作しない場合は
 `gradlew.bat bootRun` を試してください。
 
+</details>
 
 ---
 
 ### 6. 動作確認
 
-#### Swagger UI での確認
+<details>
+  <summary><strong>Swagger UI での確認</strong></summary>
 
 ブラウザで以下にアクセスし、API一覧が表示されることを確認してください。
 
@@ -355,26 +384,26 @@ gradlew.bat bootRun
 http://localhost:8080/swagger-ui.html
 ```
 
-#### Postman での確認
+</details>
+
+<details>
+  <summary><strong>Postman での確認</strong></summary>
 
 [API設計（エンドポイント一覧）](#api-list)
 に記載している各エンドポイントを実行し、リクエスト・レスポンスが正しく動作することを確認してください。
 
-## API設計（エンドポイント一覧）
-
 **エンドポイントの一例**
-
 - `GET /students` - 受講生詳細情報の一覧取得（論理削除済みを除く）
 
----
+</details>
 
-### 7. アプリケーションの停止
+<details>
+  <summary><strong>アプリケーションの停止</summary>
 
-- **コマンドライン**: `Ctrl + C` で終了
-- **IntelliJ IDEA**: 画面上部の赤い四角（■）の「停止（Stop）」ボタンをクリック
+- コマンドラインの場合: `Ctrl + C` で終了
+- IntelliJ IDEAの場合: 画面上部の赤い四角（■）の「停止（Stop）」ボタンをクリック
 
----
-
+</details>
 
 </details>
 
@@ -494,9 +523,8 @@ erDiagram
 
 後日追記予定です。
 
-## API設計（エンドポイント一覧）
-
 <a id="api-list"></a>
+## API設計（エンドポイント一覧）
 
 | HTTPメソッド | URL                   | 処理内容                                  |
 |----------|-----------------------|---------------------------------------|
@@ -538,35 +566,34 @@ erDiagram
 - **検索条件の追加対応**<br>
   年齢・性別・コース名などによる詳細な絞り込み検索の実装を予定しています。
 
-
 - **申込み状況の表示機能**<br>
   現在の受講ステータス（申込済／キャンセルなど）を表示する機能を追加予定です。
 
-
 - **コース日付のバリデーション強化**<br>
   終了予定日が開始日より前の場合にエラーを返すよう、バリデーションまたは例外処理を導入予定です。
-
 
 - **例外処理の追加**<br>
   コース名が存在しない場合のエラー（`CourseNotFoundException`）を `/courses`
   のエンドポイントでも処理するかどうか、今後の使用用途に応じて判断します。
 
-- **READMEの強化**<br>
-  アプリケーション構成図、処理フロー（シーケンス図）などの図解を追加し、設計意図をより視覚的に伝えられるREADMEを目指します。
+- **テストの導入（単体テスト・結合テスト）**<br>
+  JUnitなどを活用し、単体テストや結合テストについて学習・導入予定です。  
 
-- **単体テストの導入**<br>
-  JUnitなどを活用し、単体テストや結合テストについて学習予定です。  
-  学んだ内容を活かして、実際にテストコードを書けるようになることを目指しています。
-
+- **Dockerによる環境構築**<br>
+  Dockerを導入し、アプリケーションとMySQLをコンテナ化することで、
+  簡単に環境構築を行えるようにする予定です。
 
 - **フロントエンドの実装**<br>
   現在はAPIのみですが、今後は画面上から受講生の登録や検索などができるように、フロント側の開発にも取り組みたいと考えています。
 
-
 - **AWSによるデプロイ**<br>
   将来的にはAWSを活用して、アプリケーションをクラウド環境に公開することも検討しています。
+
+- **READMEの強化**<br>
+  アプリケーション構成図、処理フロー（シーケンス図）などの図解を追加し、設計意図をより視覚的に伝えられるREADMEを目指します。
 
 ---
 
 各セクションは今後随時更新予定です。
 まずはドラフトとして公開し、改善と追加を重ねていきます。
+
