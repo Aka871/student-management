@@ -222,8 +222,8 @@ CREATE TABLE students_courses
 > **Note**  
 > 初期データは動作確認用のサンプルです。UUID は説明用に固定値を使用しています。  
 > 実際のアプリケーション実行時には、UUID は自動生成されます。
-> また、、`students_courses` テーブルは**1人の受講生が複数のコースを受講できる設計**になっています。
-> そのため 、1人の受講生に対して複数のコースが紐づくような初期データを用意しています。
+> また、`students_courses` テーブルは**1人の受講生が複数のコースを受講できる設計**になっています。
+> そのため、1人の受講生に対して複数のコースが紐づくような初期データを用意しています。
 
 **1. students テーブルのデータ**
 
@@ -398,7 +398,7 @@ http://localhost:8080/swagger-ui.html
 </details>
 
 <details>
-  <summary><strong>アプリケーションの停止</summary>
+  <summary><strong>アプリケーションの停止</strong></summary>
 
 - コマンドラインの場合: `Ctrl + C` で終了
 - IntelliJ IDEAの場合: 画面上部の赤い四角（■）の「停止（Stop）」ボタンをクリック
@@ -414,7 +414,7 @@ http://localhost:8080/swagger-ui.html
 
 ## スクリーンショット・動画
 
-### Swagger UIによるAPI仕様書 (スクリーンショット)
+### ① Swagger UIによるAPI仕様書 (スクリーンショット)
 
 <details>
   <summary>一覧画面</summary>
@@ -457,7 +457,7 @@ http://localhost:8080/swagger-ui.html
 <img width="853" height="822" alt="スクリーンショット 2025-09-25 162025" src="https://github.com/user-attachments/assets/6280fdce-ffa7-42e7-84fd-81ae6c84da1e" />
 </details>
 
-### Postmanによる動作確認 (動画)
+### ② Postmanによる動作確認 (動画)
 
 <details>
   <summary>動画を表示する</summary>
@@ -596,4 +596,5 @@ erDiagram
 
 各セクションは今後随時更新予定です。
 まずはドラフトとして公開し、改善と追加を重ねていきます。
+
 
