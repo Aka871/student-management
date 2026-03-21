@@ -460,22 +460,31 @@ http://localhost:8080/swagger-ui.html
 ### ② Postmanによる動作確認 (動画)
 
 - **① 受講生詳細情報【登録】**  
-  `POST /students`  ([動画](https://github.com/user-attachments/assets/06977d31-7f46-44a7-855b-f33783d78c70))
+  `POST /students`
 
   → 受講生詳細情報（受講生情報＋受講生コース情報）を登録する処理です。
 
+  https://github.com/user-attachments/assets/06977d31-7f46-44a7-855b-f33783d78c70
+> 再生されない場合は[こちら](https://github.com/user-attachments/assets/06977d31-7f46-44a7-855b-f33783d78c70)
+
 
 - **② 受講生詳細情報【一覧取得】（論理削除済みの受講生を除く）**  
-  `GET /students`  ([動画](https://github.com/user-attachments/assets/8929c375-3c77-41c1-b3d2-aad105c8d77c))
+  `GET /students`
 
   → 受講生詳細情報の一覧を取得します。論理削除済みの受講生は除きます。
 
+  https://github.com/user-attachments/assets/8929c375-3c77-41c1-b3d2-aad105c8d77c
+> 再生されない場合は[こちら](https://github.com/user-attachments/assets/8929c375-3c77-41c1-b3d2-aad105c8d77c)
+
 
 - **③ 受講生詳細情報【更新（存在しないID指定時）】**  
-  `PUT /students`  ([動画](https://github.com/user-attachments/assets/9e817511-d906-49e6-ad81-8f0f1d6668fd))
+  `PUT /students`
 
   → 存在しない受講生IDを指定した場合、404 エラーと以下のメッセージが返されます。  
   エラーメッセージ：`受講生ID: ◯◯ が見つかりません`
+
+  https://github.com/user-attachments/assets/9e817511-d906-49e6-ad81-8f0f1d6668fd
+> 再生されない場合は[こちら](https://github.com/user-attachments/assets/9e817511-d906-49e6-ad81-8f0f1d6668fd)
 
 </details>
 
