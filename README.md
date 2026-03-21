@@ -420,7 +420,6 @@ http://localhost:8080/swagger-ui.html
 一覧画面
 <img width="1602" height="871" alt="スクリーンショット 2025-09-25 161339" src="https://github.com/user-attachments/assets/3893edde-b4df-4a83-89b0-0119b77e4e76" />
 <img width="1522" height="368" alt="スクリーンショット 2025-09-25 161353" src="https://github.com/user-attachments/assets/04d41679-fcb7-4377-8ac2-b786264dfa63" />
-</details>
 
 <details>
   <summary>登録</summary>
@@ -486,7 +485,6 @@ http://localhost:8080/swagger-ui.html
   https://github.com/user-attachments/assets/9e817511-d906-49e6-ad81-8f0f1d6668fd
 > 再生されない場合は[こちら](https://github.com/user-attachments/assets/9e817511-d906-49e6-ad81-8f0f1d6668fd)
 
-</details>
 
 ## ER図（Mermaid形式）
 
